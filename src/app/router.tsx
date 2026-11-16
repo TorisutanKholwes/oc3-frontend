@@ -31,6 +31,7 @@ import { ServiceActionsPage } from "@/features/service-actions/ServiceActionsPag
 import { FiltersPage } from "@/features/filters/FiltersPage";
 import { ClaimMappingsPage } from "@/features/claim-mappings/ClaimMappingsPage";
 import { Om3GrantsPage } from "@/features/om3-grants/Om3GrantsPage";
+import { SysreportAccessPage } from "@/features/sysreport-access/SysreportAccessPage";
 import { OidcAuthorizePage } from "@/features/om3-grants/OidcAuthorizePage";
 import { FormConnectorsPage } from "@/features/form-connectors/FormConnectorsPage";
 import { AIResourcesPage, AISkillsPage } from "@/features/ai-content/AIContentPage";
@@ -359,6 +360,14 @@ const om3GrantsRoute = createRoute({
   validateSearch: parseListSearch,
 });
 
+// Who sees the sensitive sysreport files: the secure patterns and the
+// authorizations of the teams. Manager only, as the api's writes.
+const sysreportAccessRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/sysreport-access",
+  component: SysreportAccessPage,
+});
+
 // Where an om3 cluster sends its users to sign in with the collector: the request
 // its provider endpoint saved, for the user signed in to approve.
 const oidcAuthorizeRoute = createRoute({
@@ -573,6 +582,7 @@ const routeTree = rootRoute.addChildren([
   filtersRoute,
   claimMappingsRoute,
   om3GrantsRoute,
+  sysreportAccessRoute,
   oidcAuthorizeRoute,
   formConnectorsRoute,
   aiResourcesRoute,

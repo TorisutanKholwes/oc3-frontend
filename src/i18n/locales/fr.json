@@ -81,7 +81,8 @@
     "notifications": "Notifications",
     "aiResources": "Ressources",
     "aiSkills": "Skills",
-    "om3Grants": "Droits om3"
+    "om3Grants": "Droits om3",
+    "sysreportAccess": "Accès aux sysreports"
   },
   "shortcuts": {
     "title": "Raccourcis clavier",
@@ -3766,6 +3767,35 @@
       "deleteQuestion": "Supprimer la règle de droits om3 de {{team}} ? Ses membres perdent ces droits au prochain renouvellement de leur jeton.",
       "deleteConfirm": "Supprimer",
       "deleting": "Suppression…"
+    }
+  },
+  "sysreportAccess": {
+    "title": "Accès aux sysreports",
+    "intro": "Les sysreports montrent le contenu et les changements des fichiers des nœuds. Ceux des fichiers correspondant à un motif sécurisé sont sensibles : seuls les managers, les membres de l'équipe responsable du nœud et les équipes qu'une autorisation désigne les voient.",
+    "actions": "Actions",
+    "add": "Ajouter",
+    "adding": "Ajout…",
+    "delete": "Supprimer",
+    "deleteConfirm": "Supprimer",
+    "deleting": "Suppression…",
+    "fields": {
+      "pattern": "Motif",
+      "group_name": "Équipe",
+      "fset_name": "Filterset"
+    },
+    "secure": {
+      "title": "Motifs sécurisés",
+      "intro": "Expressions régulières (syntaxe RE2) comparées depuis le début du chemin du fichier : .*/etc/shadow désigne ce fichier sur tous les nœuds, /etc/ tout ce qui est sous /etc.",
+      "empty": "Aucun motif sécurisé : tous les fichiers sont sensibles.",
+      "deleteQuestion": "Supprimer le motif sécurisé {{pattern}} ?"
+    },
+    "allow": {
+      "title": "Autorisations",
+      "intro": "Les membres de l'équipe voient les fichiers sensibles correspondant au motif sur les nœuds du filterset.",
+      "empty": "Aucune autorisation : seuls les managers et les responsables des nœuds voient les fichiers sensibles.",
+      "pickTeam": "Choisir une équipe",
+      "pickFilterset": "Choisir un filterset",
+      "deleteQuestion": "Supprimer l'autorisation de {{team}} sur {{filterset}} pour {{pattern}} ?"
     }
   },
   "oidcAuthorize": {

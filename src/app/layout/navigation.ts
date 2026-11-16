@@ -42,6 +42,7 @@ export type MenuId =
   | "adm-groups"
   | "adm-claim-mappings"
   | "adm-om3-grants"
+  | "adm-sysreport"
   | "adm-form-connectors"
   | "adm-ai-resources"
   | "adm-ai-skills"
@@ -96,6 +97,7 @@ export interface NavEntry {
     | "/filters"
     | "/claim-mappings"
     | "/om3-grants"
+    | "/sysreport-access"
     | "/form-connectors"
     | "/ai-resources"
     | "/ai-skills"
@@ -333,6 +335,14 @@ export const NAV_CATEGORIES: NavCategory[] = [
         menuId: "adm-om3-grants",
         labelKey: "nav.om3Grants",
         icon: "cluster",
+        privileges: ["Manager"],
+      },
+      // Who sees the sensitive sysreport files: Manager only, as the api's writes.
+      {
+        to: "/sysreport-access",
+        menuId: "adm-sysreport",
+        labelKey: "nav.sysreportAccess",
+        icon: "privilege",
         privileges: ["Manager"],
       },
       // Who the alerts are sent to, by mail or to the team messaging.

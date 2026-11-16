@@ -81,7 +81,8 @@
     "notifications": "Notifications",
     "aiResources": "Resources",
     "aiSkills": "Skills",
-    "om3Grants": "om3 grants"
+    "om3Grants": "om3 grants",
+    "sysreportAccess": "Sysreport access"
   },
   "shortcuts": {
     "title": "Keyboard shortcuts",
@@ -3766,6 +3767,35 @@
       "deleteQuestion": "Delete the om3 grant rule of {{team}}? Its members lose these grants at their next token renewal.",
       "deleteConfirm": "Delete",
       "deleting": "Deleting…"
+    }
+  },
+  "sysreportAccess": {
+    "title": "Sysreport access",
+    "intro": "The sysreports show the content and the changes of the files of the nodes. Those of the files matching a secure pattern are sensitive: only the managers, the members of the team responsible for the node and the teams an authorization names see them.",
+    "actions": "Actions",
+    "add": "Add",
+    "adding": "Adding…",
+    "delete": "Delete",
+    "deleteConfirm": "Delete",
+    "deleting": "Deleting…",
+    "fields": {
+      "pattern": "Pattern",
+      "group_name": "Team",
+      "fset_name": "Filterset"
+    },
+    "secure": {
+      "title": "Secure patterns",
+      "intro": "Regular expressions (RE2 syntax) matched from the start of the file path: .*/etc/shadow marks that file on every node, /etc/ everything under /etc.",
+      "empty": "No secure pattern: every file is sensitive.",
+      "deleteQuestion": "Delete the secure pattern {{pattern}}?"
+    },
+    "allow": {
+      "title": "Authorizations",
+      "intro": "The members of the team see the sensitive files matching the pattern on the nodes of the filterset.",
+      "empty": "No authorization: only the managers and the node responsibles see the sensitive files.",
+      "pickTeam": "Pick a team",
+      "pickFilterset": "Pick a filterset",
+      "deleteQuestion": "Delete the authorization of {{team}} on {{filterset}} for {{pattern}}?"
     }
   },
   "oidcAuthorize": {
