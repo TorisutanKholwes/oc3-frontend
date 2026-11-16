@@ -989,3 +989,45 @@ export function ListChecksIcon(props: IconProps) {
     </Svg>
   );
 }
+
+/** Zooming out, the counterpart of the plus. */
+export function MinusIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4.7 10.8h14.6a1.2 1.2 0 1 1 0 2.4H4.7a1.2 1.2 0 1 1 0-2.4Z" />
+    </Svg>
+  );
+}
+
+/** Fitting a drawing to its frame: four corners pointing out. */
+export function FitIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/** Topology: three objects and the links between them, as a graph. */
+export function TopologyIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        d="M6 7.5 12 17M18 7.5 12 17M6.5 5h11"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <circle cx="5" cy="5" r="3" />
+      <circle cx="19" cy="5" r="3" />
+      <circle cx="12" cy="18.5" r="3.2" />
+    </Svg>
+  );
+}

@@ -6000,5 +6000,55 @@
       "node": "Nœud",
       "service": "Service"
     }
+  },
+  "topology": {
+    "title": "Topologie",
+    "tab": "Topologie",
+    "summary": "Topologie de {{vertices}} objets et {{edges}} liens : {{layers}}",
+    "roleDescription": "graphe",
+    "zoomIn": "Zoomer",
+    "zoomOut": "Dézoomer",
+    "fit": "Ajuster le dessin au cadre",
+    "redraw": "Redessiner",
+    "noLayer": "Cochez au moins une couche",
+    "groups": {
+      "objects": "Objets",
+      "storage": "Stockage",
+      "locations": "Emplacements"
+    },
+    "layers": {
+      "nodes": "Nœuds",
+      "services": "Services",
+      "apps": "Applications",
+      "envs": "Environnements",
+      "resources": "Ressources",
+      "disks": "Disques",
+      "arrays": "Baies de stockage",
+      "san": "Commutateurs SAN",
+      "hvs": "Hyperviseurs",
+      "hvpools": "Pools d'hyperviseurs",
+      "hvvdcs": "Datacenters virtuels",
+      "enclosures": "Châssis",
+      "racks": "Racks",
+      "rooms": "Salles",
+      "buildings": "Bâtiments",
+      "cities": "Villes",
+      "countries": "Pays"
+    },
+    "loading": "Chargement de la topologie…",
+    "error": "Impossible de dessiner la topologie : {{message}}",
+    "empty": "Rien à dessiner.",
+    "noStart": "Rien à dessiner : aucun nœud, service ou application de départ.",
+    "hint": "Cliquez sur un nœud, un service ou une application pour l'ouvrir. Faites glisser le fond pour vous déplacer, un objet pour le bouger ; la molette zoome.",
+    "hintFocus": "Cliquez sur un nœud, un service ou une application pour l'ouvrir. Faites glisser le fond pour vous déplacer, un objet pour le bouger ; la molette zoome une fois le dessin cliqué, ou avec Ctrl.",
+    "start": {
+      "from": "À partir de {{what}}",
+      "nodes_one": "{{count}} nœud",
+      "nodes_other": "{{count}} nœuds",
+      "services_one": "{{count}} service",
+      "services_other": "{{count}} services",
+      "apps_one": "{{count}} application",
+      "apps_other": "{{count}} applications"
+    }
   }
 }

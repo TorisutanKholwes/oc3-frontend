@@ -65,6 +65,8 @@ import { ProfilePage } from "@/features/profile/ProfilePage";
 import { RulesetsPage } from "@/features/rulesets/RulesetsPage";
 import { ServicesPage } from "@/features/services/ServicesPage";
 import { TagsPage } from "@/features/tags/TagsPage";
+import { parseTopologySearch } from "@/features/topology/layers";
+import { TopologyPage } from "@/features/topology/TopologyPage";
 import { UsersPage } from "@/features/users/UsersPage";
 import { parseListSearch } from "@/lib/list-search";
 
@@ -533,6 +535,16 @@ const actionsRoute = createRoute({
   validateSearch: parseListSearch,
 });
 
+// The topology of nodes, services and applications, as the historical collector
+// drew it: opened from the actions menus of the nodes and services lists, with
+// what it starts from and its layers in the URL.
+const topologyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/topology",
+  component: TopologyPage,
+  validateSearch: parseTopologySearch,
+});
+
 // Profile of the signed-in user: no list state, hence no search.
 const profileRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -605,6 +617,7 @@ const routeTree = rootRoute.addChildren([
   complianceAttachmentsRoute,
   designerRoute,
   actionsRoute,
+  topologyRoute,
   orchestrationsRoute,
   orchestrationRoute,
   orchestrationRunsRoute,

@@ -6000,5 +6000,55 @@
       "node": "Node",
       "service": "Service"
     }
+  },
+  "topology": {
+    "title": "Topology",
+    "tab": "Topology",
+    "summary": "Topology of {{vertices}} objects and {{edges}} links: {{layers}}",
+    "roleDescription": "graph",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit the drawing to the frame",
+    "redraw": "Redraw",
+    "noLayer": "Check at least one layer",
+    "groups": {
+      "objects": "Objects",
+      "storage": "Storage",
+      "locations": "Locations"
+    },
+    "layers": {
+      "nodes": "Nodes",
+      "services": "Services",
+      "apps": "Applications",
+      "envs": "Environments",
+      "resources": "Resources",
+      "disks": "Disks",
+      "arrays": "Arrays",
+      "san": "SAN switches",
+      "hvs": "Hypervisors",
+      "hvpools": "Hypervisor pools",
+      "hvvdcs": "Virtual datacenters",
+      "enclosures": "Enclosures",
+      "racks": "Racks",
+      "rooms": "Rooms",
+      "buildings": "Buildings",
+      "cities": "Cities",
+      "countries": "Countries"
+    },
+    "loading": "Loading the topology…",
+    "error": "Cannot draw the topology: {{message}}",
+    "empty": "Nothing to draw.",
+    "noStart": "Nothing to draw: no node, service or application to start from.",
+    "hint": "Click a node, a service or an application to open it. Drag the background to pan, a vertex to move it; the wheel zooms.",
+    "hintFocus": "Click a node, a service or an application to open it. Drag the background to pan, a vertex to move it; the wheel zooms once the drawing is clicked, or with Ctrl.",
+    "start": {
+      "from": "Starting from {{what}}",
+      "nodes_one": "{{count}} node",
+      "nodes_other": "{{count}} nodes",
+      "services_one": "{{count}} service",
+      "services_other": "{{count}} services",
+      "apps_one": "{{count}} application",
+      "apps_other": "{{count}} applications"
+    }
   }
 }
