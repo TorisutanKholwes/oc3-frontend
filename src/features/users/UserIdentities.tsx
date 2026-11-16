@@ -21,6 +21,8 @@ const INPUT = "h-8 w-full rounded-(--radius-control) border border-line bg-surfa
  * itself; a service account of the provider, used by an automation, never signs
  * in that way and is linked here, by the `sub` claim of its tokens.
  *
+ * An account has one identity at most: replacing it takes unlinking it first.
+ *
  * Offered as the server accepts it: with an OpenID Connect provider, to a
  * UserManager (a Manager having it too), on a Manager's account to a Manager
  * only, and not while impersonating.
@@ -150,34 +152,38 @@ export function UserIdentities({ userId, email }: { userId: string; email: strin
           ■ {unlink.error.message}
         </p>
       )}
-      <form onSubmit={submit} className="mt-3 space-y-2">
-        <label htmlFor={`${id}-subject`} className="block text-ink-muted">
-          {t("users.identities.subject")}
-        </label>
-        <input
-          id={`${id}-subject`}
-          value={subject}
-          onChange={(event) => {
-            setSubject(event.target.value);
-          }}
-          maxLength={255}
-          spellCheck={false}
-          autoComplete="off"
-          className={`${INPUT} font-mono`}
-        />
-        <button
-          type="submit"
-          disabled={subject.trim() === "" || link.isPending}
-          className="h-8 rounded-(--radius-control) bg-accent px-3 font-medium text-accent-ink disabled:opacity-60"
-        >
-          {t("users.identities.link")}
-        </button>
-        {link.isError && (
-          <p role="alert" className="text-state-down">
-            ■ {link.error.message}
-          </p>
-        )}
-      </form>
+      {identities.isSuccess && rows.length > 0 ? (
+        <p className="mt-3 text-ink-muted">{t("users.identities.oneOnly")}</p>
+      ) : (
+        <form onSubmit={submit} className="mt-3 space-y-2">
+          <label htmlFor={`${id}-subject`} className="block text-ink-muted">
+            {t("users.identities.subject")}
+          </label>
+          <input
+            id={`${id}-subject`}
+            value={subject}
+            onChange={(event) => {
+              setSubject(event.target.value);
+            }}
+            maxLength={255}
+            spellCheck={false}
+            autoComplete="off"
+            className={`${INPUT} font-mono`}
+          />
+          <button
+            type="submit"
+            disabled={subject.trim() === "" || link.isPending}
+            className="h-8 rounded-(--radius-control) bg-accent px-3 font-medium text-accent-ink disabled:opacity-60"
+          >
+            {t("users.identities.link")}
+          </button>
+          {link.isError && (
+            <p role="alert" className="text-state-down">
+              ■ {link.error.message}
+            </p>
+          )}
+        </form>
+      )}
     </section>
   );
 }

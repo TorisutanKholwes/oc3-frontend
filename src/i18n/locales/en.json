@@ -1917,7 +1917,8 @@
       "unlink": "Unlink",
       "unlinkQuestion": "Unlink the identity {{subject}} from {{email}}? Its tokens will no longer sign in.",
       "unlinkConfirm": "Unlink",
-      "unlinking": "Unlinking…"
+      "unlinking": "Unlinking…",
+      "oneOnly": "An account has one identity at most: unlink this one to link another."
     }
   },
   "profile": {

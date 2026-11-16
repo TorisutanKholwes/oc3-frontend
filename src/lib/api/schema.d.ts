@@ -9003,8 +9003,9 @@ export interface paths {
      *     made: the access tokens of the identity then sign in as the account.
      *     `subject` is the `sub` claim of its tokens; `issuer` defaults to, and must
      *     be, the issuer of the collector's provider. Requires the UserManager
-     *     privilege; only a Manager links an identity to a Manager. An identity
-     *     already linked is refused with a 409. The link is logged.
+     *     privilege; only a Manager links an identity to a Manager. An account has
+     *     one identity at most: an account having one, or an identity already
+     *     linked, is refused with a 409. The link is logged.
      */
     post: operations["PostUserIdentities"];
     delete?: never;

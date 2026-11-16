@@ -15,6 +15,7 @@ describe("the identities of a user", () => {
   let oidc: boolean;
   let posted: { path: string; body: unknown }[];
   let deleted: string[];
+  let linked: boolean;
 
   beforeEach(() => {
     void i18n.changeLanguage("en");
@@ -23,6 +24,7 @@ describe("the identities of a user", () => {
     oidc = true;
     posted = [];
     deleted = [];
+    linked = true;
     vi.stubGlobal(
       "fetch",
       vi.fn<typeof fetch>(async (input) => {
@@ -51,6 +53,7 @@ describe("the identities of a user", () => {
               data: targetRoles.map((role, i) => ({ id: i + 10, role, privilege: "T" })),
             });
           case "/users/7/identities":
+            if (!linked) return json({ data: [] });
             return json({
               data: [
                 {
@@ -81,10 +84,18 @@ describe("the identities of a user", () => {
     );
   }
 
-  test("lists the identities and links one by its subject", async () => {
+  test("lists the identity, and links none more", async () => {
     renderIdentities();
     expect(await screen.findByText("e80d0616")).toBeInTheDocument();
     expect(screen.getByText("Never signed in through the browser.")).toBeInTheDocument();
+    expect(screen.getByText(/one identity at most/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Link the identity" })).not.toBeInTheDocument();
+  });
+
+  test("links an identity by its subject", async () => {
+    linked = false;
+    renderIdentities();
+    expect(await screen.findByText("No identity linked.")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Subject (sub claim) of the identity to link"), {
       target: { value: " abc123 " },
     });

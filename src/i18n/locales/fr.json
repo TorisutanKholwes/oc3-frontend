@@ -1917,7 +1917,8 @@
       "unlink": "Délier",
       "unlinkQuestion": "Délier l'identité {{subject}} de {{email}} ? Ses jetons ne permettront plus de se connecter.",
       "unlinkConfirm": "Délier",
-      "unlinking": "Déliaison…"
+      "unlinking": "Déliaison…",
+      "oneOnly": "Un compte a au plus une identité : délie celle-ci pour en lier une autre."
     }
   },
   "profile": {
