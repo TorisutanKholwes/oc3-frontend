@@ -258,7 +258,8 @@
         "alerts": "Open alerts",
         "checks": "Values against their thresholds",
         "compliance": "Modules checked and fixed",
-        "logs": "Collector log of the node"
+        "logs": "Collector log of the node",
+        "topology": "Its services, their nodes, and where they are"
       }
     },
     "actions": {
@@ -1028,7 +1029,8 @@
         "logs": "Collector log of the service",
         "instances": "Instances on each node",
         "alerts": "Open alerts",
-        "resinfo": "Keys the resources declare"
+        "resinfo": "Keys the resources declare",
+        "topology": "Its nodes, their services, and where they are"
       },
       "instances": "Status",
       "alerts": "Alerts",
@@ -1436,6 +1438,9 @@
           "done_other": "{{count}} application codes deleted."
         }
       }
+    },
+    "related": {
+      "label": "Application data"
     }
   },
   "networks": {
@@ -4206,7 +4211,8 @@
     "noMatch": "No action matches.",
     "dataDescriptions": {
       "delete": "Remove the selected items from the collector, for good."
-    }
+    },
+    "topology": "Show the topology"
   },
   "commonality": {
     "title": "Commonality of {{what}}",

@@ -394,6 +394,9 @@ export function ServicesPage() {
             update({ sel: undefined, tab: undefined });
             setComparing(true);
           }}
+          onTopology={() => {
+            void navigate({ to: "/topology", search: { svc_ids: selectedIds.join(",") } });
+          }}
         />
       </div>
 

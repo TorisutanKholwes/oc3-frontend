@@ -142,7 +142,15 @@ export function PeekPanel() {
       case "resource":
         return <ResourceDetailPanel resourceId={id} label={label} onClose={close} />;
       case "app":
-        return <AppDetailPanel appId={id} label={label} onClose={close} />;
+        return (
+          <AppDetailPanel
+            appId={id}
+            label={label}
+            tab={tab}
+            onTabChange={onTabChange}
+            onClose={close}
+          />
+        );
       case "group":
         return (
           <GroupDetailPanel

@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Combobox, type ComboboxOption } from "@/components/ui/Combobox";
 import { MenuButton, type MenuItem } from "@/components/ui/MenuButton";
-import { CloseIcon, ColumnsIcon, GearIcon } from "@/components/ui/icons";
+import { CloseIcon, ColumnsIcon, GearIcon, TopologyIcon } from "@/components/ui/icons";
 import {
   actionLook,
   dataActionLook,
@@ -223,6 +223,7 @@ export function ActionsMenu({
   enqueue,
   dataActions = [],
   onCompare,
+  onTopology,
 }: {
   targets: ActionTarget[];
   /** Agent actions; none for an object the agents do not act on, such as an alert. */
@@ -243,6 +244,11 @@ export function ActionsMenu({
    * actions, which change something, as it only reads.
    */
   onCompare?: () => void;
+  /**
+   * Opens the topology of the targets: offered from one of them, beside the
+   * comparison, as it only reads too.
+   */
+  onTopology?: () => void;
 }) {
   const { t, i18n } = useTranslation();
   const [pending, setPending] = useState<Pending | null>(null);
@@ -411,6 +417,15 @@ export function ActionsMenu({
       disabled: busy,
       onSelect: onCompare,
       icon: <ColumnsIcon className={MENU_ICON} />,
+    });
+  if (onTopology !== undefined && targets.length >= 1)
+    items.push({
+      key: "topology",
+      label: t("actionsMenu.topology"),
+      separatorBefore: !(onCompare !== undefined && targets.length >= 2),
+      disabled: busy,
+      onSelect: onTopology,
+      icon: <TopologyIcon className={MENU_ICON} />,
     });
 
   // Shown once the privileges are known: an entry must not appear then vanish.

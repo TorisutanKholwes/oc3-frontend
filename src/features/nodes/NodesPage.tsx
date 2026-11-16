@@ -400,6 +400,9 @@ export function NodesPage() {
             setCreating(false);
             setComparing(true);
           }}
+          onTopology={() => {
+            void navigate({ to: "/topology", search: { node_ids: selectedIds.join(",") } });
+          }}
         />
       </div>
 

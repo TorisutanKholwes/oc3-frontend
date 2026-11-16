@@ -18,7 +18,8 @@ import { NodeStorage } from "./NodeStorage";
 import { NodeLogs } from "./NodeLogs";
 import { NodeServices } from "./NodeServices";
 import { NodeStats } from "./NodeStats";
-import { BookIcon, GearIcon, LineChartIcon } from "@/components/ui/icons";
+import { BookIcon, GearIcon, LineChartIcon, TopologyIcon } from "@/components/ui/icons";
+import { TopologyView } from "@/features/topology/TopologyView";
 import { NodeSysreport } from "./NodeSysreport";
 import { NodeCompliance } from "./NodeCompliance";
 import {
@@ -93,6 +94,17 @@ export const NODE_RELATED_TABS: RelatedTab[] = [
       return actionStatusSummary(useNodeActionStats(nodeId).data, t);
     },
     render: (nodeId, locale) => <ServiceActions nodeId={nodeId} locale={locale} />,
+  },
+  {
+    key: "topology",
+    hideCount: true,
+    labelKey: "topology.tab",
+    descriptionKey: "nodes.related.descriptions.topology",
+    icon: <TopologyIcon className="h-4 w-4 shrink-0 text-icon-node" />,
+    // No count: a drawing, which is only read when the tab opens.
+    useSummary: () => ({ count: undefined }),
+    // As the historical node tab: the node, its services and their other nodes.
+    render: (nodeId) => <TopologyView start={{ nodeIds: [nodeId] }} />,
   },
   {
     key: "hardware",
@@ -246,7 +258,7 @@ export const NODE_TAB_GROUPS: RelatedTabGroup[] = [
   {
     key: "workload",
     labelKey: "related.groups.workload",
-    tabs: ["services", "actions"],
+    tabs: ["services", "actions", "topology"],
   },
   {
     key: "health",

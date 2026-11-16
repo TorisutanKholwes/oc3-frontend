@@ -258,7 +258,8 @@
         "alerts": "Alertes ouvertes",
         "checks": "Valeurs face à leurs seuils",
         "compliance": "Modules vérifiés et corrigés",
-        "logs": "Journal du collector pour le nœud"
+        "logs": "Journal du collector pour le nœud",
+        "topology": "Ses services, leurs nœuds, et où ils se trouvent"
       }
     },
     "actions": {
@@ -1028,7 +1029,8 @@
         "logs": "Journal du collector pour le service",
         "instances": "Instances sur chaque nœud",
         "alerts": "Alertes ouvertes",
-        "resinfo": "Clés déclarées par les ressources"
+        "resinfo": "Clés déclarées par les ressources",
+        "topology": "Ses nœuds, leurs services, et où ils se trouvent"
       },
       "instances": "Statut",
       "alerts": "Alertes",
@@ -1436,6 +1438,9 @@
           "done_other": "{{count}} codes application supprimés."
         }
       }
+    },
+    "related": {
+      "label": "Données de l'application"
     }
   },
   "networks": {
@@ -4206,7 +4211,8 @@
     "noMatch": "Aucune action ne correspond.",
     "dataDescriptions": {
       "delete": "Supprimer définitivement les éléments sélectionnés du collecteur."
-    }
+    },
+    "topology": "Afficher la topologie"
   },
   "commonality": {
     "title": "Points communs de {{what}}",
