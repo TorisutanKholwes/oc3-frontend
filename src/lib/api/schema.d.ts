@@ -8840,6 +8840,30 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/topology": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description The topology of nodes and services, as the historical collector drew it:
+     *     a graph of the objects of the layers asked for, and of what relates them.
+     *     It starts from the nodes, services and applications given, those of the
+     *     applications the caller's groups are responsible for unless a manager,
+     *     then takes the services of those nodes and the nodes of those services.
+     *     More than 1000 nodes and services are refused with a 400.
+     */
+    get: operations["GetTopology"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/users": {
     parameters: {
       query?: never;
@@ -13362,6 +13386,55 @@ export interface components {
       /** @description A regular expression of the tags this one may not be attached with. */
       exclude?: string;
       name: string;
+    };
+    /** @description A graph of nodes, services and what relates them. */
+    Topology: {
+      edges: components["schemas"]["TopologyEdge"][];
+      vertices: components["schemas"]["TopologyVertex"][];
+    };
+    TopologyEdge: {
+      from: string;
+      /** @description A count, or the links of a SAN path by speed. */
+      label?: string;
+      /** @description Availability of the instance or the resource the edge stands for. */
+      status?: string;
+      to: string;
+    };
+    TopologyVertex: {
+      /** @description Resources of a resource type, disks of a disk group. */
+      count?: number;
+      /** @description Operating system and model of a node, disks of a disk group. */
+      detail?: string;
+      id: string;
+      /**
+       * @description node, service, app, env, disk, array, sansw, a location layer, or
+       *     for a resource its type family (ip, fs, disk, container.docker, app...).
+       */
+      kind: string;
+      label: string;
+      /** @enum {string} */
+      layer:
+        | "nodes"
+        | "services"
+        | "apps"
+        | "envs"
+        | "resources"
+        | "disks"
+        | "arrays"
+        | "san"
+        | "hvs"
+        | "hvpools"
+        | "hvvdcs"
+        | "enclosures"
+        | "racks"
+        | "rooms"
+        | "buildings"
+        | "cities"
+        | "countries";
+      node_id?: string;
+      /** @description Availability of a service; undef when not updated for 15 minutes. */
+      status?: string;
+      svc_id?: string;
     };
     UserIdentityListResponse: {
       data: components["schemas"]["UserIdentityRow"][];
@@ -39594,6 +39667,42 @@ export interface operations {
       401: components["responses"]["401"];
       403: components["responses"]["403"];
       404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetTopology: {
+    parameters: {
+      query: {
+        /** @description Comma-separated application ids to start from */
+        app_ids?: string;
+        /**
+         * @description Comma-separated layers to show: nodes, services, apps, envs,
+         *     resources, disks, arrays, san, and the locations hvs, hvpools,
+         *     hvvdcs, enclosures, racks, rooms, buildings, cities, countries.
+         */
+        display: string;
+        /** @description Comma-separated node ids to start from */
+        node_ids?: string;
+        /** @description Comma-separated service ids to start from */
+        svc_ids?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Topology"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
       500: components["responses"]["500"];
     };
   };
