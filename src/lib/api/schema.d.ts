@@ -8983,6 +8983,58 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/users/{user_id}/identities": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description The OpenID Connect identities linked to an account: an access token of one
+     *     of them signs in as the account. Requires the UserManager privilege, but for
+     *     one's own account.
+     */
+    get: operations["GetUserIdentities"];
+    put?: never;
+    /**
+     * @description Link an OpenID Connect identity to an account, for an automation whose
+     *     account never signs in through the browser, where the link is otherwise
+     *     made: the access tokens of the identity then sign in as the account.
+     *     `subject` is the `sub` claim of its tokens; `issuer` defaults to, and must
+     *     be, the issuer of the collector's provider. Requires the UserManager
+     *     privilege; only a Manager links an identity to a Manager. An identity
+     *     already linked is refused with a 409. The link is logged.
+     */
+    post: operations["PostUserIdentities"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/users/{user_id}/identities/{identity_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * @description Unlink an OpenID Connect identity from an account: its access tokens no
+     *     longer sign in, and its next browser sign-in links it again by email when
+     *     an account has the email. Requires the UserManager privilege; only a
+     *     Manager unlinks an identity of a Manager. The unlink is logged.
+     */
+    delete: operations["DeleteUserIdentity"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/users/{user_id}/impersonate": {
     parameters: {
       query?: never;
@@ -13309,6 +13361,21 @@ export interface components {
       /** @description A regular expression of the tags this one may not be attached with. */
       exclude?: string;
       name: string;
+    };
+    UserIdentityListResponse: {
+      data: components["schemas"]["UserIdentityRow"][];
+      info?: string;
+      meta?: components["schemas"]["ListMeta"];
+    };
+    /** @description An OpenID Connect identity linked to an account. */
+    UserIdentityRow: {
+      created?: string;
+      id?: number;
+      issuer?: string;
+      /** @description Last browser sign-in through the identity */
+      last_login?: string;
+      subject?: string;
+      user_id?: number;
     };
     UserListResponse: {
       data:
@@ -39930,6 +39997,163 @@ export interface operations {
       400: components["responses"]["400"];
       401: components["responses"]["401"];
       403: components["responses"]["403"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetUserIdentities: {
+    parameters: {
+      query?: {
+        /**
+         * @description Column filter, repeatable; several filters combine with AND. Each value is
+         *     `prop:expr`, `prop` being a property of the list (joined ones included, as
+         *     for orderby) and `expr` one of:
+         *       - text: case-insensitive match anywhere in the value;
+         *       - `~regex`: regular expression (RE2 syntax), case-insensitive;
+         *       - `in:a,b,c`: one of the listed values;
+         *       - `eq:v`, `ne:v`: equal, not equal;
+         *       - `gt:v`, `gte:v`, `lt:v`, `lte:v`: comparisons, for numbers and dates;
+         *         a date may be relative to now, `-` then a duration in weeks, days,
+         *         hours, minutes and seconds: `lt:-15m` keeps the dates older than 15
+         *         minutes, `gte:-1d12h` those of the last day and a half;
+         *       - `empty`: no value;
+         *       - `!expr`: the inverse of any of the above, that is the rows `expr` leaves
+         *         out, those without a value included: `!dev`, `!~^dev`, `!in:a,b`,
+         *         `!empty` (any value).
+         *     An unknown property, a property without a column, or an invalid regular
+         *     expression is answered with 400.
+         */
+        filter?: components["parameters"]["inQueryFilter"];
+        /** @description Comma-separated list of properties to group the result by (e.g. groupby=app,svcname). */
+        groupby?: components["parameters"]["inQueryGroupby"];
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /**
+         * @description Include metadata in the response. Enabled by default. Use false or 0 to omit
+         *     the meta field. The metadata of a list carries its total number of rows
+         *     without pagination (total), as well as the rows returned (count), the offset
+         *     and the limit.
+         */
+        meta?: components["parameters"]["inQueryMeta"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+        /** @description Comma-separated list of properties to sort by. Prefix a property with - for descending order (e.g. orderby=nodename,-app). */
+        orderby?: components["parameters"]["inQueryOrderby"];
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+        /**
+         * @description With "1" or "true", the response counts the distinct values of each
+         *     selected property instead of listing the rows: `data` maps each property
+         *     to an object of value → number of rows ("empty" for a null or blank
+         *     value), over the whole selection (access control, filters and session
+         *     filterset applied, `offset` ignored). `limit`, when given, caps the
+         *     number of values returned per property, the most frequent first; without
+         *     it every value is returned. `meta.total` is the number of rows,
+         *     `meta.distinct` the number of distinct values of each property, and
+         *     `meta.other` the number of rows whose value was left out by the limit.
+         *     A count taking longer than 5 seconds is refused with a 400, asking to
+         *     narrow the selection.
+         */
+        stats?: components["parameters"]["inQueryStats"];
+      };
+      header?: never;
+      path: {
+        /**
+         * @description User identifier: auth_user.id, the user email when it contains an
+         *     "@", or "self" for the authenticated user.
+         */
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UserIdentityListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostUserIdentities: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description User identifier: auth_user.id, the user email when it contains an
+         *     "@", or "self" for the authenticated user.
+         */
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description The iss claim of the identity's tokens */
+          issuer?: string;
+          /** @description The sub claim of the identity's tokens */
+          subject: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UserIdentityListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  DeleteUserIdentity: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Record id of the link */
+        identity_id: string;
+        /**
+         * @description User identifier: auth_user.id, the user email when it contains an
+         *     "@", or "self" for the authenticated user.
+         */
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InfoResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
       500: components["responses"]["500"];
     };
   };
