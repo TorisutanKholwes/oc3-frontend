@@ -1905,6 +1905,19 @@
       "mismatch": "The two passwords differ.",
       "submit": "Create",
       "submitting": "Creating…"
+    },
+    "identities": {
+      "title": "Identity provider",
+      "hint": "Identities of {{issuer}} signing in as this account. A browser sign-in links its own; a service account used by an automation is linked here by the sub claim of its tokens.",
+      "none": "No identity linked.",
+      "lastSignIn": "Last browser sign-in:",
+      "neverSignedIn": "Never signed in through the browser.",
+      "subject": "Subject (sub claim) of the identity to link",
+      "link": "Link the identity",
+      "unlink": "Unlink",
+      "unlinkQuestion": "Unlink the identity {{subject}} from {{email}}? Its tokens will no longer sign in.",
+      "unlinkConfirm": "Unlink",
+      "unlinking": "Unlinking…"
     }
   },
   "profile": {

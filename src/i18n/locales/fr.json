@@ -1905,6 +1905,19 @@
       "mismatch": "Les deux mots de passe diffèrent.",
       "submit": "Créer",
       "submitting": "Création…"
+    },
+    "identities": {
+      "title": "Fournisseur d'identité",
+      "hint": "Identités de {{issuer}} qui se connectent avec ce compte. Une connexion dans le navigateur lie la sienne ; un compte de service utilisé par une automatisation se lie ici par la claim sub de ses jetons.",
+      "none": "Aucune identité liée.",
+      "lastSignIn": "Dernière connexion dans le navigateur :",
+      "neverSignedIn": "Jamais connecté dans le navigateur.",
+      "subject": "Sujet (claim sub) de l'identité à lier",
+      "link": "Lier l'identité",
+      "unlink": "Délier",
+      "unlinkQuestion": "Délier l'identité {{subject}} de {{email}} ? Ses jetons ne permettront plus de se connecter.",
+      "unlinkConfirm": "Délier",
+      "unlinking": "Déliaison…"
     }
   },
   "profile": {
