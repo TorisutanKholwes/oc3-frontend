@@ -48,6 +48,7 @@ export type ObjectKind =
   | "resource"
   | "action"
   | "network"
+  | "declaredNetwork"
   | "disk"
   | "array"
   | "save"
@@ -111,6 +112,8 @@ const KINDS: Record<ObjectKind, { Icon: typeof ServerIcon; className: string }> 
   // An orchestration: steps of agent actions, one after the other.
   orchestration: { Icon: ListChecksIcon, className: "text-icon-service" },
   network: { Icon: NetworkIcon, className: "text-icon-network" },
+  // A network declared in the collector, the range its node addresses fall in.
+  declaredNetwork: { Icon: NetworkIcon, className: "text-icon-network" },
   disk: { Icon: DatabaseIcon, className: "text-icon-disk" },
   // A storage array: the disks it serves, in their tint.
   array: { Icon: DatabaseIcon, className: "text-icon-disk" },

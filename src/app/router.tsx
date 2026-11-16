@@ -56,6 +56,7 @@ import { LogsPage } from "@/features/logs/LogsPage";
 import { ModulesetsPage } from "@/features/modulesets/ModulesetsPage";
 import { CompModulesPage } from "@/features/comp-modules/CompModulesPage";
 import { NetworksPage } from "@/features/networks/NetworksPage";
+import { DeclaredNetworksPage } from "@/features/networks/DeclaredNetworksPage";
 import { NodesPage } from "@/features/nodes/NodesPage";
 import { ObsolescencePage } from "@/features/obsolescence/ObsolescencePage";
 import { ActionsPage } from "@/features/actions/ActionsPage";
@@ -108,6 +109,15 @@ const networksRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/networks",
   component: NetworksPage,
+  validateSearch: parseListSearch,
+});
+
+// The declared networks, their segments and addresses; the node addresses keep
+// /networks.
+const declaredNetworksRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/networks/declared",
+  component: DeclaredNetworksPage,
   validateSearch: parseListSearch,
 });
 
@@ -538,6 +548,7 @@ const routeTree = rootRoute.addChildren([
   resourcesRoute,
   serviceActionsRoute,
   networksRoute,
+  declaredNetworksRoute,
   disksRoute,
   quotasRoute,
   savesRoute,

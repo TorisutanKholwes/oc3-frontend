@@ -18,11 +18,11 @@ function toInt(value: string): number | undefined {
 }
 
 /**
- * Declaring a network. The Networks view lists node addresses, not the declared
- * networks: a network once created shows through the node addresses it contains,
- * whose Network column takes its name, and in the network picker of a segment. The range preview reproduces the computation of the table's
- * generated columns; the server stays the only judge (network address, gateway,
- * uniqueness).
+ * Declaring a network, from the declared networks (Networks) or from the node
+ * addresses (Node networks), whose Network column takes its name for the
+ * addresses it contains. The range preview reproduces the computation of the
+ * table's generated columns; the server stays the only judge (network address,
+ * gateway, uniqueness).
  */
 export function CreateNetworkPanel({
   open,

@@ -23,6 +23,7 @@ export type MenuId =
   | "view-actions"
   | "view-checks"
   | "view-node-net"
+  | "view-net"
   | "view-disks"
   | "view-disks-quotas"
   | "view-arrays"
@@ -79,6 +80,7 @@ export interface NavEntry {
     | "/checks/defaults"
     | "/checks/contextual"
     | "/networks"
+    | "/networks/declared"
     | "/disks"
     | "/quotas"
     | "/arrays"
@@ -203,7 +205,21 @@ export const NAV_CATEGORIES: NavCategory[] = [
     labelKey: "nav.categories.inventory",
     view: "operator",
     entries: [
-      { to: "/networks", menuId: "view-node-net", labelKey: "nav.networks", icon: "network" },
+      // The declared networks, as the historical "Networks" view; the node
+      // addresses below them, as its "Node networks".
+      {
+        to: "/networks/declared",
+        menuId: "view-net",
+        labelKey: "nav.declaredNetworks",
+        icon: "declaredNetwork",
+      },
+      {
+        to: "/networks",
+        menuId: "view-node-net",
+        labelKey: "nav.networks",
+        icon: "network",
+        exact: true,
+      },
       { to: "/disks", menuId: "view-disks", labelKey: "nav.disks", icon: "disk" },
       { to: "/quotas", menuId: "view-disks-quotas", labelKey: "nav.quotas", icon: "disk" },
       { to: "/arrays", menuId: "view-arrays", labelKey: "nav.arrays", icon: "array" },

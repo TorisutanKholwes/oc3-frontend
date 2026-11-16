@@ -23,7 +23,8 @@
       "assistant": "AI assistant"
     },
     "apps": "Apps",
-    "networks": "Networks",
+    "networks": "Node networks",
+    "declaredNetworks": "Networks",
     "disks": "Disks",
     "groups": "Groups",
     "tags": "Tags",
@@ -1461,7 +1462,7 @@
       "net_comment": "Comment",
       "net_team_responsible": "Responsible team"
     },
-    "title": "Networks",
+    "title": "Node networks",
     "detail": {
       "title": "IP address",
       "groups": {
@@ -1475,7 +1476,7 @@
     "create": {
       "open": "New network",
       "title": "New network",
-      "intro": "Declare an IPv4 network. The Networks view lists node addresses, not declared networks: node addresses inside the range will show its name, gateway and range in the Network column.",
+      "intro": "Declare an IPv4 network. Node addresses inside its range show its name, gateway and range in the Node networks view; its segments are declared from its detail in the Networks view.",
       "noRow": "The network was created but not returned.",
       "hostBits": "This address has host bits set; the network address is {{network}}.",
       "useNetwork": "Use {{network}}",
@@ -1545,6 +1546,85 @@
           "running": "Deleting…",
           "done_one": "1 IP address deleted.",
           "done_other": "{{count}} IP addresses deleted."
+        }
+      }
+    },
+    "declared": {
+      "title": "Networks",
+      "intro": "The IPv4 networks declared in the collector, with their gateway, VLAN and responsible team. Open one for its segments, their responsible groups and its addresses.",
+      "addressesLink": "Addresses reported by the nodes",
+      "fields": {
+        "id": "Record id",
+        "name": "Name",
+        "network": "Network address",
+        "netmask": "Prefix",
+        "cidr": "Network",
+        "begin": "Range start",
+        "end": "Range end",
+        "broadcast": "Broadcast",
+        "gateway": "Gateway",
+        "pvid": "VLAN (PVID)",
+        "prio": "Priority",
+        "team_responsible": "Responsible team",
+        "comment": "Comment",
+        "updated": "Updated"
+      },
+      "detail": {
+        "title": "Network",
+        "tabs": "Network details",
+        "groups": {
+          "identity": "Network",
+          "ownership": "Responsibility",
+          "record": "Record"
+        },
+        "editHint": "The NetworkManagers of the responsible team change the network. A new network or prefix must still hold its segments; an empty gateway unsets it.",
+        "cidrInvalid": "Type the network as address/prefix, for example 10.0.0.0/24."
+      },
+      "delete": {
+        "question": "Delete the network {{network}}?",
+        "consequence": "Its segments and their responsible groups are deleted with it. The node addresses stay, outside any declared network.",
+        "done": "Network {{network}} deleted."
+      },
+      "tabs": {
+        "segments": "Segments",
+        "ips": "Addresses"
+      },
+      "segments": {
+        "intro": "Address ranges of the network. The members of the groups responsible for a segment allocate its addresses.",
+        "none": "No segment: the whole network is listed in its addresses.",
+        "size_one": "{{formatted}} address",
+        "size_other": "{{formatted}} addresses",
+        "edit": "Edit",
+        "save": "Save",
+        "saving": "Saving…",
+        "deleteQuestion": "Delete the segment {{range}}? Its responsible groups are detached from it."
+      },
+      "responsibles": {
+        "title": "Responsible groups",
+        "none": "No group is responsible for this segment.",
+        "add": "Add a responsible group",
+        "remove": "Remove {{group}}",
+        "added": "{{group}} is now responsible for the segment.",
+        "removed": "{{group}} is no longer responsible for the segment.",
+        "noMatch": "No matching group."
+      },
+      "ips": {
+        "intro": "The addresses of the segments your groups are responsible for (all of them for a manager), or of the whole network when it has no segment, with the nodes reporting them.",
+        "ip": "Address",
+        "segment": "Segment",
+        "nodes": "Nodes",
+        "free": "free",
+        "noSegment": "No segment",
+        "freeOnly": "Free addresses only",
+        "range_one": "{{from}}–{{to}} of {{total}} address",
+        "range_other": "{{from}}–{{to}} of {{total}} addresses",
+        "previous": "Previous",
+        "next": "Next",
+        "none": "No address to list.",
+        "noneFree": "No free address.",
+        "refused": {
+          "forbidden": "None of your groups is responsible for a segment of this network: its addresses are listed to the groups responsible for its segments, and to managers.",
+          "tooMany": "This network holds too many addresses to list them all (more than 65,536). Declare segments to narrow it."
         }
       }
     }
