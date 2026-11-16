@@ -5209,6 +5209,62 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/networks/{net_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Display a declared network. Every authenticated user may read it. */
+    get: operations["GetNetwork"];
+    put?: never;
+    /**
+     * @description Change the properties of a declared network, as the historical collector's
+     *     rest_post_network did. Requires the NetworkManager privilege and, unless the
+     *     caller is a manager, membership of the network's responsible team. The
+     *     properties left out are kept. A new `network`/`netmask` must be a network
+     *     address, must not be declared already (409) and must still hold the
+     *     segments of the network (409).
+     */
+    post: operations["PostNetwork"];
+    /**
+     * @description Delete a declared network, its segments and their responsible groups.
+     *     Requires the NetworkManager privilege and, unless the caller is a manager,
+     *     membership of the network's responsible team.
+     */
+    delete: operations["DeleteNetwork"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/networks/{net_id}/ips": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description The addresses of a network, as the historical collector's
+     *     rest_get_network_ips listed them: those of the segments of the network the
+     *     caller's groups are responsible for (all of them for a manager or a member
+     *     of the network's responsible team), or every
+     *     address of the network when it has no segment. Each address tells the
+     *     segment it is in and the nodes reporting it. The DNS records of the
+     *     historical collector are not listed. A range over 65536 addresses is
+     *     refused with 400.
+     */
+    get: operations["GetNetworkIps"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/networks/{net_id}/segments": {
     parameters: {
       query?: never;
@@ -5216,7 +5272,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get?: never;
+    /**
+     * @description The segments of a network, by first address. Every authenticated user may
+     *     read them.
+     */
+    get: operations["GetNetworkSegments"];
     put?: never;
     /**
      * @description Declare a segment of a network: an address range whose responsible groups
@@ -5227,6 +5287,80 @@ export interface paths {
      */
     post: operations["PostNetworkSegments"];
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/networks/{net_id}/segments/{seg_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Display a segment of a network. Every authenticated user may read it. */
+    get: operations["GetNetworkSegment"];
+    put?: never;
+    /**
+     * @description Change the type or the range of a segment, as the historical collector's
+     *     rest_post_network_segment did. Requires the NetworkManager privilege and,
+     *     unless the caller is a manager, membership of a group responsible for the
+     *     segment or of the network's responsible team. The range must lie inside the
+     *     network and must not overlap another segment of it (409).
+     */
+    post: operations["PostNetworkSegment"];
+    /**
+     * @description Delete a segment of a network and its responsible groups. Requires the
+     *     NetworkManager privilege and, unless the caller is a manager, membership of
+     *     the network's responsible team.
+     */
+    delete: operations["DeleteNetworkSegment"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/networks/{net_id}/segments/{seg_id}/responsibles": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description The groups responsible for a segment: their members may allocate its
+     *     addresses. Every authenticated user may read them.
+     */
+    get: operations["GetNetworkSegmentResponsibles"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/networks/{net_id}/segments/{seg_id}/responsibles/{group_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Make a group responsible for a segment. Unless the caller is a manager, it
+     *     must be a member of a group responsible for the segment or of the network's
+     *     responsible team. A group already responsible is refused with 409.
+     */
+    post: operations["PostNetworkSegmentResponsible"];
+    /**
+     * @description Detach a responsible group from a segment, with the same authorization as
+     *     the attachment.
+     */
+    delete: operations["DeleteNetworkSegmentResponsible"];
     options?: never;
     head?: never;
     patch?: never;
@@ -8423,6 +8557,59 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/sysreport/authorizations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description List the sysreport authorizations. An authorization is an
+     *     organizational group, filterset and regular expression tuple: the
+     *     members of the group can see the sysreport content and diffs of the
+     *     files whose path matches the regular expression, on the nodes of the
+     *     filterset. Requires a user authentication.
+     */
+    get: operations["GetSysreportAuthorizations"];
+    put?: never;
+    /**
+     * @description Create a sysreport authorization. The group is given by group_id or
+     *     group_name, the filterset by fset_id or fset_name. The pattern is a
+     *     regular expression of the Go syntax (RE2), matched from the start of the
+     *     file path, as the sysreport access checks do. Requires the Manager
+     *     privilege. The action is logged in the collector's log and the table
+     *     change is announced.
+     */
+    post: operations["PostSysreportAuthorizations"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/sysreport/authorizations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description A sysreport authorization. Requires a user authentication. */
+    get: operations["GetSysreportAuthorization"];
+    put?: never;
+    post?: never;
+    /**
+     * @description Delete a sysreport authorization. Requires the Manager privilege. The
+     *     action is logged in the collector's log and the table change is
+     *     announced.
+     */
+    delete: operations["DeleteSysreportAuthorization"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/sysreport/purges/{purge_id}": {
     parameters: {
       query?: never;
@@ -8438,6 +8625,57 @@ export interface paths {
     put?: never;
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/sysreport/secure_patterns": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description List the sysreport secure patterns. A secure pattern is a regular
+     *     expression: the content and diffs of the sysreport files whose path
+     *     matches any pattern are only shown to the managers, the node
+     *     responsibles and the groups a sysreport authorization lets see them.
+     *     Requires a user authentication.
+     */
+    get: operations["GetSysreportSecurePatterns"];
+    put?: never;
+    /**
+     * @description Create a sysreport secure pattern. The pattern is a regular expression
+     *     of the Go syntax (RE2), matched from the start of the file path, as the
+     *     sysreport access checks do. Requires the Manager privilege. The action
+     *     is logged in the collector's log and the table change is announced.
+     */
+    post: operations["PostSysreportSecurePatterns"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/sysreport/secure_patterns/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description A sysreport secure pattern. Requires a user authentication. */
+    get: operations["GetSysreportSecurePattern"];
+    put?: never;
+    post?: never;
+    /**
+     * @description Delete a sysreport secure pattern. Requires the Manager privilege. The
+     *     action is logged in the collector's log and the table change is
+     *     announced.
+     */
+    delete: operations["DeleteSysreportSecurePattern"];
     options?: never;
     head?: never;
     patch?: never;
@@ -11316,6 +11554,23 @@ export interface components {
       /** @description The roles of the groups responsible for the moduleset, comma separated. */
       teams_responsible?: string;
     };
+    NetworkIpListResponse: {
+      data: components["schemas"]["NetworkIpRow"][];
+      meta?: components["schemas"]["ListMeta"];
+    };
+    /** @description A node reporting an address. */
+    NetworkIpNode: {
+      node_id: string;
+      nodename: string;
+    };
+    /** @description An address of a network, with its segment and the nodes reporting it. */
+    NetworkIpRow: {
+      ip: string;
+      nodes: components["schemas"]["NetworkIpNode"][];
+      seg_id?: number | null;
+      /** @description static or dynamic, empty outside segments */
+      seg_type?: string;
+    };
     NetworkListResponse: {
       data: components["schemas"]["NetworkRow"][];
       info?: string;
@@ -11343,6 +11598,21 @@ export interface components {
     NetworkSegmentListResponse: {
       data: components["schemas"]["NetworkSegmentRow"][];
       info?: string;
+      meta?: components["schemas"]["ListMeta"];
+    };
+    NetworkSegmentResponsibleListResponse: {
+      data: components["schemas"]["NetworkSegmentResponsibleRow"][];
+      info?: string;
+      meta?: components["schemas"]["ListMeta"];
+    };
+    /** @description A group responsible for a segment of a network. */
+    NetworkSegmentResponsibleRow: {
+      description?: string;
+      group_id?: number;
+      id?: number;
+      /** @description Name of the group */
+      role?: string;
+      seg_id?: number;
     };
     /** @description An address range of a network, delegated to its responsible groups. */
     NetworkSegmentRow: {
@@ -12834,6 +13104,42 @@ export interface components {
       sw_slot?: number | null;
       sw_updated?: string;
     };
+    /** @description The group by group_id or group_name, the filterset by fset_id or fset_name. */
+    SysreportAuthorizationInput: {
+      /** @description The id of the filterset of the nodes the authorization applies to. Exclusive with fset_name. */
+      fset_id?: number;
+      /** @description The name of the filterset of the nodes the authorization applies to. Exclusive with fset_id. */
+      fset_name?: string;
+      /** @description The id of the group to authorize. Exclusive with group_name. */
+      group_id?: number;
+      /** @description The name of the group to authorize. Exclusive with group_id. */
+      group_name?: string;
+      /** @description A regular expression matched from the start of the file path. */
+      pattern: string;
+    };
+    SysreportAuthorizationListResponse: {
+      data:
+        | components["schemas"]["SysreportAuthorizationRow"][]
+        | {
+            [key: string]: {
+              [key: string]: number;
+            };
+          };
+      meta?: components["schemas"]["ListMeta"];
+    };
+    /**
+     * @description A sysreport authorization, with the names of its group and filterset,
+     *     empty when they do not exist any more. Every property is optional: the
+     *     `props` query parameter selects which columns the server returns.
+     */
+    SysreportAuthorizationRow: {
+      fset_id?: number;
+      fset_name?: string;
+      group_id?: number;
+      group_name?: string;
+      id?: number;
+      pattern?: string;
+    };
     /** @description A report that changed something. */
     SysreportChange: {
       cid: string;
@@ -12946,6 +13252,28 @@ export interface components {
     };
     SysreportPurgeResponse: {
       data: components["schemas"]["SysreportPurge"];
+    };
+    SysreportSecurePatternInput: {
+      /** @description A regular expression matched from the start of the file path. */
+      pattern: string;
+    };
+    SysreportSecurePatternListResponse: {
+      data:
+        | components["schemas"]["SysreportSecurePatternRow"][]
+        | {
+            [key: string]: {
+              [key: string]: number;
+            };
+          };
+      meta?: components["schemas"]["ListMeta"];
+    };
+    /**
+     * @description A sysreport secure pattern. Every property is optional: the `props`
+     *     query parameter selects which columns the server returns.
+     */
+    SysreportSecurePatternRow: {
+      id?: number;
+      pattern?: string;
     };
     SysreportTimediffResponse: {
       data: {
@@ -29045,6 +29373,275 @@ export interface operations {
       500: components["responses"]["500"];
     };
   };
+  GetNetwork: {
+    parameters: {
+      query?: {
+        /**
+         * @description Column filter, repeatable; several filters combine with AND. Each value is
+         *     `prop:expr`, `prop` being a property of the list (joined ones included, as
+         *     for orderby) and `expr` one of:
+         *       - text: case-insensitive match anywhere in the value;
+         *       - `~regex`: regular expression (RE2 syntax), case-insensitive;
+         *       - `in:a,b,c`: one of the listed values;
+         *       - `eq:v`, `ne:v`: equal, not equal;
+         *       - `gt:v`, `gte:v`, `lt:v`, `lte:v`: comparisons, for numbers and dates;
+         *         a date may be relative to now, `-` then a duration in weeks, days,
+         *         hours, minutes and seconds: `lt:-15m` keeps the dates older than 15
+         *         minutes, `gte:-1d12h` those of the last day and a half;
+         *       - `empty`: no value;
+         *       - `!expr`: the inverse of any of the above, that is the rows `expr` leaves
+         *         out, those without a value included: `!dev`, `!~^dev`, `!in:a,b`,
+         *         `!empty` (any value).
+         *     An unknown property, a property without a column, or an invalid regular
+         *     expression is answered with 400.
+         */
+        filter?: components["parameters"]["inQueryFilter"];
+        /** @description Comma-separated list of properties to group the result by (e.g. groupby=app,svcname). */
+        groupby?: components["parameters"]["inQueryGroupby"];
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /**
+         * @description Include metadata in the response. Enabled by default. Use false or 0 to omit
+         *     the meta field. The metadata of a list carries its total number of rows
+         *     without pagination (total), as well as the rows returned (count), the offset
+         *     and the limit.
+         */
+        meta?: components["parameters"]["inQueryMeta"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+        /** @description Comma-separated list of properties to sort by. Prefix a property with - for descending order (e.g. orderby=nodename,-app). */
+        orderby?: components["parameters"]["inQueryOrderby"];
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+        /**
+         * @description With "1" or "true", the response counts the distinct values of each
+         *     selected property instead of listing the rows: `data` maps each property
+         *     to an object of value → number of rows ("empty" for a null or blank
+         *     value), over the whole selection (access control, filters and session
+         *     filterset applied, `offset` ignored). `limit`, when given, caps the
+         *     number of values returned per property, the most frequent first; without
+         *     it every value is returned. `meta.total` is the number of rows,
+         *     `meta.distinct` the number of distinct values of each property, and
+         *     `meta.other` the number of rows whose value was left out by the limit.
+         *     A count taking longer than 5 seconds is refused with a 400, asking to
+         *     narrow the selection.
+         */
+        stats?: components["parameters"]["inQueryStats"];
+      };
+      header?: never;
+      path: {
+        /** @description Record id of the network */
+        net_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NetworkListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostNetwork: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Record id of the network */
+        net_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          comment?: string;
+          /** @description IPv4 address inside the network, empty to unset */
+          gateway?: string;
+          name?: string;
+          /** @description Prefix length */
+          netmask?: number;
+          /** @description IPv4 network address, for example 192.168.10.0 */
+          network?: string;
+          /** @description Priority among overlapping networks */
+          prio?: number;
+          /** @description VLAN id */
+          pvid?: number;
+          /** @description Organisational group responsible for the network */
+          team_responsible?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NetworkListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  DeleteNetwork: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Record id of the network */
+        net_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InfoResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetNetworkIps: {
+    parameters: {
+      query?: {
+        /** @description Only the addresses no node reports */
+        free?: boolean;
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+      };
+      header?: never;
+      path: {
+        /** @description Record id of the network */
+        net_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NetworkIpListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetNetworkSegments: {
+    parameters: {
+      query?: {
+        /**
+         * @description Column filter, repeatable; several filters combine with AND. Each value is
+         *     `prop:expr`, `prop` being a property of the list (joined ones included, as
+         *     for orderby) and `expr` one of:
+         *       - text: case-insensitive match anywhere in the value;
+         *       - `~regex`: regular expression (RE2 syntax), case-insensitive;
+         *       - `in:a,b,c`: one of the listed values;
+         *       - `eq:v`, `ne:v`: equal, not equal;
+         *       - `gt:v`, `gte:v`, `lt:v`, `lte:v`: comparisons, for numbers and dates;
+         *         a date may be relative to now, `-` then a duration in weeks, days,
+         *         hours, minutes and seconds: `lt:-15m` keeps the dates older than 15
+         *         minutes, `gte:-1d12h` those of the last day and a half;
+         *       - `empty`: no value;
+         *       - `!expr`: the inverse of any of the above, that is the rows `expr` leaves
+         *         out, those without a value included: `!dev`, `!~^dev`, `!in:a,b`,
+         *         `!empty` (any value).
+         *     An unknown property, a property without a column, or an invalid regular
+         *     expression is answered with 400.
+         */
+        filter?: components["parameters"]["inQueryFilter"];
+        /** @description Comma-separated list of properties to group the result by (e.g. groupby=app,svcname). */
+        groupby?: components["parameters"]["inQueryGroupby"];
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /**
+         * @description Include metadata in the response. Enabled by default. Use false or 0 to omit
+         *     the meta field. The metadata of a list carries its total number of rows
+         *     without pagination (total), as well as the rows returned (count), the offset
+         *     and the limit.
+         */
+        meta?: components["parameters"]["inQueryMeta"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+        /** @description Comma-separated list of properties to sort by. Prefix a property with - for descending order (e.g. orderby=nodename,-app). */
+        orderby?: components["parameters"]["inQueryOrderby"];
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+        /**
+         * @description With "1" or "true", the response counts the distinct values of each
+         *     selected property instead of listing the rows: `data` maps each property
+         *     to an object of value → number of rows ("empty" for a null or blank
+         *     value), over the whole selection (access control, filters and session
+         *     filterset applied, `offset` ignored). `limit`, when given, caps the
+         *     number of values returned per property, the most frequent first; without
+         *     it every value is returned. `meta.total` is the number of rows,
+         *     `meta.distinct` the number of distinct values of each property, and
+         *     `meta.other` the number of rows whose value was left out by the limit.
+         *     A count taking longer than 5 seconds is refused with a 400, asking to
+         *     narrow the selection.
+         */
+        stats?: components["parameters"]["inQueryStats"];
+      };
+      header?: never;
+      path: {
+        /** @description Record id of the network */
+        net_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NetworkSegmentListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
   PostNetworkSegments: {
     parameters: {
       query?: never;
@@ -29086,6 +29683,305 @@ export interface operations {
       403: components["responses"]["403"];
       404: components["responses"]["404"];
       409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetNetworkSegment: {
+    parameters: {
+      query?: {
+        /**
+         * @description Column filter, repeatable; several filters combine with AND. Each value is
+         *     `prop:expr`, `prop` being a property of the list (joined ones included, as
+         *     for orderby) and `expr` one of:
+         *       - text: case-insensitive match anywhere in the value;
+         *       - `~regex`: regular expression (RE2 syntax), case-insensitive;
+         *       - `in:a,b,c`: one of the listed values;
+         *       - `eq:v`, `ne:v`: equal, not equal;
+         *       - `gt:v`, `gte:v`, `lt:v`, `lte:v`: comparisons, for numbers and dates;
+         *         a date may be relative to now, `-` then a duration in weeks, days,
+         *         hours, minutes and seconds: `lt:-15m` keeps the dates older than 15
+         *         minutes, `gte:-1d12h` those of the last day and a half;
+         *       - `empty`: no value;
+         *       - `!expr`: the inverse of any of the above, that is the rows `expr` leaves
+         *         out, those without a value included: `!dev`, `!~^dev`, `!in:a,b`,
+         *         `!empty` (any value).
+         *     An unknown property, a property without a column, or an invalid regular
+         *     expression is answered with 400.
+         */
+        filter?: components["parameters"]["inQueryFilter"];
+        /** @description Comma-separated list of properties to group the result by (e.g. groupby=app,svcname). */
+        groupby?: components["parameters"]["inQueryGroupby"];
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /**
+         * @description Include metadata in the response. Enabled by default. Use false or 0 to omit
+         *     the meta field. The metadata of a list carries its total number of rows
+         *     without pagination (total), as well as the rows returned (count), the offset
+         *     and the limit.
+         */
+        meta?: components["parameters"]["inQueryMeta"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+        /** @description Comma-separated list of properties to sort by. Prefix a property with - for descending order (e.g. orderby=nodename,-app). */
+        orderby?: components["parameters"]["inQueryOrderby"];
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+        /**
+         * @description With "1" or "true", the response counts the distinct values of each
+         *     selected property instead of listing the rows: `data` maps each property
+         *     to an object of value → number of rows ("empty" for a null or blank
+         *     value), over the whole selection (access control, filters and session
+         *     filterset applied, `offset` ignored). `limit`, when given, caps the
+         *     number of values returned per property, the most frequent first; without
+         *     it every value is returned. `meta.total` is the number of rows,
+         *     `meta.distinct` the number of distinct values of each property, and
+         *     `meta.other` the number of rows whose value was left out by the limit.
+         *     A count taking longer than 5 seconds is refused with a 400, asking to
+         *     narrow the selection.
+         */
+        stats?: components["parameters"]["inQueryStats"];
+      };
+      header?: never;
+      path: {
+        /** @description Record id of the network */
+        net_id: string;
+        /** @description Record id of the segment */
+        seg_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NetworkSegmentListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostNetworkSegment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Record id of the network */
+        net_id: string;
+        /** @description Record id of the segment */
+        seg_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description First IPv4 address of the segment */
+          seg_begin?: string;
+          /** @description Last IPv4 address of the segment */
+          seg_end?: string;
+          /** @enum {string} */
+          seg_type?: "static" | "dynamic";
+        };
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NetworkSegmentListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  DeleteNetworkSegment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Record id of the network */
+        net_id: string;
+        /** @description Record id of the segment */
+        seg_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InfoResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetNetworkSegmentResponsibles: {
+    parameters: {
+      query?: {
+        /**
+         * @description Column filter, repeatable; several filters combine with AND. Each value is
+         *     `prop:expr`, `prop` being a property of the list (joined ones included, as
+         *     for orderby) and `expr` one of:
+         *       - text: case-insensitive match anywhere in the value;
+         *       - `~regex`: regular expression (RE2 syntax), case-insensitive;
+         *       - `in:a,b,c`: one of the listed values;
+         *       - `eq:v`, `ne:v`: equal, not equal;
+         *       - `gt:v`, `gte:v`, `lt:v`, `lte:v`: comparisons, for numbers and dates;
+         *         a date may be relative to now, `-` then a duration in weeks, days,
+         *         hours, minutes and seconds: `lt:-15m` keeps the dates older than 15
+         *         minutes, `gte:-1d12h` those of the last day and a half;
+         *       - `empty`: no value;
+         *       - `!expr`: the inverse of any of the above, that is the rows `expr` leaves
+         *         out, those without a value included: `!dev`, `!~^dev`, `!in:a,b`,
+         *         `!empty` (any value).
+         *     An unknown property, a property without a column, or an invalid regular
+         *     expression is answered with 400.
+         */
+        filter?: components["parameters"]["inQueryFilter"];
+        /** @description Comma-separated list of properties to group the result by (e.g. groupby=app,svcname). */
+        groupby?: components["parameters"]["inQueryGroupby"];
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /**
+         * @description Include metadata in the response. Enabled by default. Use false or 0 to omit
+         *     the meta field. The metadata of a list carries its total number of rows
+         *     without pagination (total), as well as the rows returned (count), the offset
+         *     and the limit.
+         */
+        meta?: components["parameters"]["inQueryMeta"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+        /** @description Comma-separated list of properties to sort by. Prefix a property with - for descending order (e.g. orderby=nodename,-app). */
+        orderby?: components["parameters"]["inQueryOrderby"];
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+        /**
+         * @description With "1" or "true", the response counts the distinct values of each
+         *     selected property instead of listing the rows: `data` maps each property
+         *     to an object of value → number of rows ("empty" for a null or blank
+         *     value), over the whole selection (access control, filters and session
+         *     filterset applied, `offset` ignored). `limit`, when given, caps the
+         *     number of values returned per property, the most frequent first; without
+         *     it every value is returned. `meta.total` is the number of rows,
+         *     `meta.distinct` the number of distinct values of each property, and
+         *     `meta.other` the number of rows whose value was left out by the limit.
+         *     A count taking longer than 5 seconds is refused with a 400, asking to
+         *     narrow the selection.
+         */
+        stats?: components["parameters"]["inQueryStats"];
+      };
+      header?: never;
+      path: {
+        /** @description Record id of the network */
+        net_id: string;
+        /** @description Record id of the segment */
+        seg_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NetworkSegmentResponsibleListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostNetworkSegmentResponsible: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Id or role of an organisational group */
+        group_id: string;
+        /** @description Record id of the network */
+        net_id: string;
+        /** @description Record id of the segment */
+        seg_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NetworkSegmentResponsibleListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  DeleteNetworkSegmentResponsible: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Id or role of an organisational group */
+        group_id: string;
+        /** @description Record id of the network */
+        net_id: string;
+        /** @description Record id of the segment */
+        seg_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InfoResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
       500: components["responses"]["500"];
     };
   };
@@ -37463,6 +38359,168 @@ export interface operations {
       500: components["responses"]["500"];
     };
   };
+  GetSysreportAuthorizations: {
+    parameters: {
+      query?: {
+        /**
+         * @description Column filter, repeatable; several filters combine with AND. Each value is
+         *     `prop:expr`, `prop` being a property of the list (joined ones included, as
+         *     for orderby) and `expr` one of:
+         *       - text: case-insensitive match anywhere in the value;
+         *       - `~regex`: regular expression (RE2 syntax), case-insensitive;
+         *       - `in:a,b,c`: one of the listed values;
+         *       - `eq:v`, `ne:v`: equal, not equal;
+         *       - `gt:v`, `gte:v`, `lt:v`, `lte:v`: comparisons, for numbers and dates;
+         *         a date may be relative to now, `-` then a duration in weeks, days,
+         *         hours, minutes and seconds: `lt:-15m` keeps the dates older than 15
+         *         minutes, `gte:-1d12h` those of the last day and a half;
+         *       - `empty`: no value;
+         *       - `!expr`: the inverse of any of the above, that is the rows `expr` leaves
+         *         out, those without a value included: `!dev`, `!~^dev`, `!in:a,b`,
+         *         `!empty` (any value).
+         *     An unknown property, a property without a column, or an invalid regular
+         *     expression is answered with 400.
+         */
+        filter?: components["parameters"]["inQueryFilter"];
+        /** @description Comma-separated list of properties to group the result by (e.g. groupby=app,svcname). */
+        groupby?: components["parameters"]["inQueryGroupby"];
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /**
+         * @description Include metadata in the response. Enabled by default. Use false or 0 to omit
+         *     the meta field. The metadata of a list carries its total number of rows
+         *     without pagination (total), as well as the rows returned (count), the offset
+         *     and the limit.
+         */
+        meta?: components["parameters"]["inQueryMeta"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+        /** @description Comma-separated list of properties to sort by. Prefix a property with - for descending order (e.g. orderby=nodename,-app). */
+        orderby?: components["parameters"]["inQueryOrderby"];
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+        /**
+         * @description With "1" or "true", the response counts the distinct values of each
+         *     selected property instead of listing the rows: `data` maps each property
+         *     to an object of value → number of rows ("empty" for a null or blank
+         *     value), over the whole selection (access control, filters and session
+         *     filterset applied, `offset` ignored). `limit`, when given, caps the
+         *     number of values returned per property, the most frequent first; without
+         *     it every value is returned. `meta.total` is the number of rows,
+         *     `meta.distinct` the number of distinct values of each property, and
+         *     `meta.other` the number of rows whose value was left out by the limit.
+         *     A count taking longer than 5 seconds is refused with a 400, asking to
+         *     narrow the selection.
+         */
+        stats?: components["parameters"]["inQueryStats"];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SysreportAuthorizationListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostSysreportAuthorizations: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SysreportAuthorizationInput"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SysreportAuthorizationListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetSysreportAuthorization: {
+    parameters: {
+      query?: {
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+      };
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SysreportAuthorizationListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  DeleteSysreportAuthorization: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            info?: string;
+          };
+        };
+      };
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
   GetSysreportPurge: {
     parameters: {
       query?: never;
@@ -37481,6 +38539,167 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SysreportPurgeResponse"];
+        };
+      };
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetSysreportSecurePatterns: {
+    parameters: {
+      query?: {
+        /**
+         * @description Column filter, repeatable; several filters combine with AND. Each value is
+         *     `prop:expr`, `prop` being a property of the list (joined ones included, as
+         *     for orderby) and `expr` one of:
+         *       - text: case-insensitive match anywhere in the value;
+         *       - `~regex`: regular expression (RE2 syntax), case-insensitive;
+         *       - `in:a,b,c`: one of the listed values;
+         *       - `eq:v`, `ne:v`: equal, not equal;
+         *       - `gt:v`, `gte:v`, `lt:v`, `lte:v`: comparisons, for numbers and dates;
+         *         a date may be relative to now, `-` then a duration in weeks, days,
+         *         hours, minutes and seconds: `lt:-15m` keeps the dates older than 15
+         *         minutes, `gte:-1d12h` those of the last day and a half;
+         *       - `empty`: no value;
+         *       - `!expr`: the inverse of any of the above, that is the rows `expr` leaves
+         *         out, those without a value included: `!dev`, `!~^dev`, `!in:a,b`,
+         *         `!empty` (any value).
+         *     An unknown property, a property without a column, or an invalid regular
+         *     expression is answered with 400.
+         */
+        filter?: components["parameters"]["inQueryFilter"];
+        /** @description Comma-separated list of properties to group the result by (e.g. groupby=app,svcname). */
+        groupby?: components["parameters"]["inQueryGroupby"];
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /**
+         * @description Include metadata in the response. Enabled by default. Use false or 0 to omit
+         *     the meta field. The metadata of a list carries its total number of rows
+         *     without pagination (total), as well as the rows returned (count), the offset
+         *     and the limit.
+         */
+        meta?: components["parameters"]["inQueryMeta"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+        /** @description Comma-separated list of properties to sort by. Prefix a property with - for descending order (e.g. orderby=nodename,-app). */
+        orderby?: components["parameters"]["inQueryOrderby"];
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+        /**
+         * @description With "1" or "true", the response counts the distinct values of each
+         *     selected property instead of listing the rows: `data` maps each property
+         *     to an object of value → number of rows ("empty" for a null or blank
+         *     value), over the whole selection (access control, filters and session
+         *     filterset applied, `offset` ignored). `limit`, when given, caps the
+         *     number of values returned per property, the most frequent first; without
+         *     it every value is returned. `meta.total` is the number of rows,
+         *     `meta.distinct` the number of distinct values of each property, and
+         *     `meta.other` the number of rows whose value was left out by the limit.
+         *     A count taking longer than 5 seconds is refused with a 400, asking to
+         *     narrow the selection.
+         */
+        stats?: components["parameters"]["inQueryStats"];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SysreportSecurePatternListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostSysreportSecurePatterns: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SysreportSecurePatternInput"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SysreportSecurePatternListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetSysreportSecurePattern: {
+    parameters: {
+      query?: {
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+      };
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SysreportSecurePatternListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  DeleteSysreportSecurePattern: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            info?: string;
+          };
         };
       };
       401: components["responses"]["401"];
