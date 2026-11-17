@@ -84,7 +84,19 @@ describe("the page of the assistant", () => {
     });
     expect(client.run).toHaveBeenCalledWith(
       "new",
-      { prompt: "Keyboard diagnostic", promptId: "prompt-1", held: [] },
+      {
+        prompt: "Keyboard diagnostic",
+        promptId: "prompt-1",
+        held: [],
+        // The context of the page under it, and the clock of the user.
+        context: expect.arrayContaining([
+          { description: "time zone", value: expect.any(String) },
+          {
+            description: "local time",
+            value: expect.stringMatching(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d[+-]\d\d:\d\d$/),
+          },
+        ]),
+      },
       expect.any(Object),
     );
     expect(box()).toHaveValue("");

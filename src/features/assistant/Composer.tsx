@@ -134,9 +134,11 @@ export function Composer({
 
   // After a stop or a failure, nothing goes alone: the user sends the queued
   // message again, or takes it back.
+  // Sent again, it goes with the page it was asked from.
   function resend() {
+    const context = chat.queued?.context;
     const text = chat.takeQueued();
-    if (text !== null) void chat.send(text);
+    if (text !== null) void chat.send(text, context);
   }
 
   function replace() {

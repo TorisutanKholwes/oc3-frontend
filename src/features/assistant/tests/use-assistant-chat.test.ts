@@ -72,7 +72,7 @@ describe("useAssistantChat", () => {
     expect(client.createConversation).toHaveBeenCalledTimes(1);
     expect(client.run).toHaveBeenCalledWith(
       "new",
-      { prompt: "hello", promptId: "prompt-1", held: [] },
+      { prompt: "hello", promptId: "prompt-1", held: [], context: [] },
       expect.objectContaining({ signal: expect.any(AbortSignal) as AbortSignal }),
     );
     expect(result.current.messages).toMatchObject([
@@ -98,6 +98,7 @@ describe("useAssistantChat", () => {
         { id: "prompt-1", role: "user" },
         { id: "turn-9:2", role: "assistant" },
       ],
+      context: [],
     });
   });
 
@@ -911,6 +912,42 @@ describe("useAssistantChat", () => {
     const prompts = () =>
       client.run.mock.calls.map(([, input]) => ("prompt" in input ? input.prompt : undefined));
 
+    it("goes with the page it was asked from, not the page shown once it goes", async () => {
+      const first = deferredRun();
+      client.run.mockImplementationOnce(first.run);
+      let page = [
+        { description: "page", value: "/nodes" },
+        { description: "selected node", value: "node-1" },
+      ];
+      const { result } = renderHook(() => useAssistantChat(client, true, "", () => page));
+      await waitFor(() => {
+        expect(result.current.pending).toBe("");
+      });
+      let sent: Promise<unknown> | undefined;
+      act(() => {
+        sent = result.current.send("First");
+      });
+      await waitFor(() => {
+        expect(result.current.conversation?.id).toBe("new");
+      });
+      act(() => {
+        expect(result.current.queue("Is it down?")).toBe(true);
+      });
+      page = [{ description: "page", value: "/services" }];
+      await act(async () => {
+        first.end();
+        await sent;
+      });
+      await waitFor(() => {
+        expect(client.run).toHaveBeenCalledTimes(2);
+      });
+      const input = client.run.mock.calls[1]?.[1];
+      expect(input !== undefined && "context" in input ? input.context : null).toEqual([
+        { description: "page", value: "/nodes" },
+        { description: "selected node", value: "node-1" },
+      ]);
+    });
+
     it("goes once the turn ends normally, in its conversation, the thread up to date", async () => {
       const first = deferredRun();
       client.run.mockImplementationOnce(first.run);
@@ -925,7 +962,7 @@ describe("useAssistantChat", () => {
       act(() => {
         expect(result.current.queue("Second")).toBe(true);
       });
-      expect(result.current.queued).toEqual({ conversationId: "new", text: "Second" });
+      expect(result.current.queued).toEqual({ conversationId: "new", text: "Second", context: [] });
       await act(async () => {
         first.end();
         await sent;

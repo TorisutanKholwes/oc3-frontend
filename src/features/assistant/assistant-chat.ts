@@ -1,4 +1,5 @@
 import { createContext, useContext } from "react";
+import type { AssistantClient } from "./assistant-client";
 import type { AssistantChat } from "./use-assistant-chat";
 
 /** What the assistant does while no view shows it; all false while one does. */
@@ -13,6 +14,8 @@ export interface AssistantActivity {
 
 export interface SharedChat {
   chat: AssistantChat;
+  /** The client of the chat, for what a view reads besides it, such as the tools. */
+  client: AssistantClient;
   /** Called by a view while it shows the chat; gives back its release. */
   attach: () => () => void;
   /**

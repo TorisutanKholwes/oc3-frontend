@@ -2,6 +2,7 @@ import { EventType } from "@ag-ui/core";
 import { EventSchema } from "@ag-ui/core/schemas";
 import type { components } from "@/lib/api/schema";
 import { api, apiGetDynamic } from "@/lib/api/client";
+import { boundContext, type InterfaceEntry } from "./interface-context";
 
 /**
  * The client of the AI agent, through the relay of oc3 (`/api/assistant/...`):
@@ -1341,7 +1342,13 @@ export interface HeldMessage {
  * nothing running. `held` are the messages this client holds.
  */
 export type RunInput = { held?: HeldMessage[] } & (
-  | { prompt: string; promptId: string; resume?: undefined }
+  | {
+      prompt: string;
+      promptId: string;
+      resume?: undefined;
+      /** The context of the interface the prompt is asked from (`interface-context.ts`). */
+      context?: readonly InterfaceEntry[];
+    }
   | { resume: { interruptId: string; approved: boolean; editedArgs?: Args; preview?: undefined } }
   | {
       resume: {
@@ -1619,7 +1626,9 @@ export function createAssistantClient({
         protocolVersion: AGUI_PROTOCOL_VERSION,
         messages,
         tools: [],
-        context: [],
+        // A new prompt goes with the context of its page, bounded as the agent
+        // takes it; a resume with none, the turn keeping the one of its prompt.
+        context: input.resume === undefined ? boundContext(input.context ?? []) : [],
         state: {},
         forwardedProps: {},
         ...(resume !== undefined ? { resume } : {}),

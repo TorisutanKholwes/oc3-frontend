@@ -27,7 +27,7 @@ import { BookmarksBar } from "./BookmarksBar";
 import { BookmarksProvider } from "./BookmarksProvider";
 import { GlobalSearch } from "./search/GlobalSearch";
 import { AssistantChatProvider } from "@/features/assistant/assistant-chat-context";
-import { AssistantDock } from "@/features/assistant/AssistantDock";
+import { AssistantDock, AssistantDockButton } from "@/features/assistant/AssistantDock";
 import { assistantClient } from "@/features/assistant/assistant-client";
 
 const SIDEBAR_KEY = "oc3.sidebar";
@@ -130,45 +130,48 @@ export function AppShell() {
       <PanelSideProvider>
         <div className="grid min-h-dvh grid-rows-[auto_1fr_auto] bg-surface text-ink">
           <AccountAppearance />
-          {/* The top of the interface: the panels open below it (`useAppTop`). */}
-          <div ref={setTopEl}>
-            <header className="flex h-11 items-center gap-4 border-b border-line bg-surface-raised px-3">
-              <button
-                type="button"
-                onClick={toggleSidebar}
-                aria-expanded={sidebarOpen}
-                aria-controls="app-sidebar"
-                title={`${sidebarOpen ? t("nav.hideMenu") : t("nav.showMenu")}\n${t("nav.menuShortcut")}`}
-                className="flex h-7 w-7 items-center justify-center rounded-(--radius-control) text-ink-muted hover:bg-surface-sunken hover:text-ink"
-              >
-                <SidebarIcon open={sidebarOpen} className="h-4.5 w-4.5" />
-                <span className="sr-only">
-                  {sidebarOpen ? t("nav.hideMenu") : t("nav.showMenu")}
-                </span>
-              </button>
-
-              <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-                {/* Decorative: the title that follows already names the link. */}
-                <img src={opensvcLogo} alt="" width={24} height={24} className="h-6 w-6" />
-                OpenSVC Collector
-              </Link>
-
-              <div className="ml-auto flex items-center gap-3">
-                <SessionFilter />
-                <ActionQueueLink />
-                <GlobalSearch />
-                <LiveIndicator />
-                <UserMenu user={user ?? credentials.user} />
-              </div>
-            </header>
-            <ImpersonationBanner />
-            {status === "expired" && <SessionExpiredBanner />}
-            <NoticeRegion />
-          </div>
-
           {/* The chat of the assistant, held for every page: a turn goes on while
-              the user looks at another one, its progress in the menu. */}
+              the user looks at another one, its progress in the menu and on its
+              button of the top bar. It adds no element: the rows of the grid stay. */}
           <AssistantChatProvider identity={assistantKey} client={assistantClient}>
+            {/* The top of the interface: the panels open below it (`useAppTop`). */}
+            <div ref={setTopEl}>
+              <header className="flex h-11 items-center gap-4 border-b border-line bg-surface-raised px-3">
+                <button
+                  type="button"
+                  onClick={toggleSidebar}
+                  aria-expanded={sidebarOpen}
+                  aria-controls="app-sidebar"
+                  title={`${sidebarOpen ? t("nav.hideMenu") : t("nav.showMenu")}\n${t("nav.menuShortcut")}`}
+                  className="flex h-7 w-7 items-center justify-center rounded-(--radius-control) text-ink-muted hover:bg-surface-sunken hover:text-ink"
+                >
+                  <SidebarIcon open={sidebarOpen} className="h-4.5 w-4.5" />
+                  <span className="sr-only">
+                    {sidebarOpen ? t("nav.hideMenu") : t("nav.showMenu")}
+                  </span>
+                </button>
+
+                <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
+                  {/* Decorative: the title that follows already names the link. */}
+                  <img src={opensvcLogo} alt="" width={24} height={24} className="h-6 w-6" />
+                  OpenSVC Collector
+                </Link>
+
+                <div className="ml-auto flex items-center gap-3">
+                  <SessionFilter />
+                  <ActionQueueLink />
+                  <GlobalSearch />
+                  <LiveIndicator />
+                  {/* The dock of the assistant, over the page on display. */}
+                  <AssistantDockButton />
+                  <UserMenu user={user ?? credentials.user} />
+                </div>
+              </header>
+              <ImpersonationBanner />
+              {status === "expired" && <SessionExpiredBanner />}
+              <NoticeRegion />
+            </div>
+
             <div className="grid min-h-0 grid-cols-[auto_1fr]">
               <Sidebar open={sidebarOpen} />
               <MainArea>
@@ -180,7 +183,7 @@ export function AppShell() {
                 <ShortcutsHelp />
               </MainArea>
             </div>
-            {/* The chat over the page on display, opened from a record. */}
+            {/* The chat over the page on display, opened from the top bar or the key a. */}
             <AssistantDock />
           </AssistantChatProvider>
           {/* The records the user bookmarked, at the foot of every view. */}
