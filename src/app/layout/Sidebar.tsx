@@ -15,6 +15,8 @@ import { useNavCollapsedPref, useNavViewPref } from "@/lib/user-prefs";
 import { labelMatches, normalizeSearch } from "@/lib/label-search";
 import { hasPrivilege, useEffectivePrivileges } from "@/lib/api/effective-privileges";
 import { useHiddenMenuEntries } from "@/lib/api/hidden-menu-entries";
+import { useAssistantStatus } from "@/features/assistant/assistant-status";
+import { useScrollEdges } from "./scroll-edges";
 import {
   NAV_CATEGORIES,
   NAV_TOP,
@@ -27,6 +29,18 @@ import {
 const LINK =
   "flex items-center gap-2 rounded-(--radius-control) px-2 py-1 text-ink-muted hover:text-ink";
 const LINK_ACTIVE = { className: "bg-accent-soft text-ink" };
+
+/** A light fade over an edge of the menu, where entries are out of sight. */
+function EdgeFade({ edge, visible }: { edge: "top" | "bottom"; visible: boolean }) {
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none sticky z-10 h-8 from-surface-raised to-transparent transition-opacity duration-150 ${
+        edge === "top" ? "top-0 -mb-8 bg-linear-to-b" : "bottom-0 -mt-8 bg-linear-to-t"
+      } ${visible ? "opacity-100" : "opacity-0"}`}
+    />
+  );
+}
 
 function NavLink({ entry }: { entry: NavEntry }) {
   const { t } = useTranslation();
@@ -88,6 +102,9 @@ function ViewSwitch({ view, onChange }: { view: NavView; onChange: (view: NavVie
  * An entry every organizational group of the user hides
  * (`/groups/{id}/hidden_menu_entries`, see `useHiddenMenuEntries`) does not show
  * either: a choice of the teams, not a right, its view staying open to its address.
+ * The entries of the AI assistant (`NavEntry.assistant`) show only when oc3 has
+ * an assistant configured (`/assistant/status`): without one, they would lead to
+ * a page that can do nothing.
  *
  * Two menus, chosen at the top (`ViewSwitch`, or "v" anywhere): operator, to watch
  * and act, and admin, to set the collector up. The choice is kept for the account,
@@ -104,6 +121,7 @@ function ViewSwitch({ view, onChange }: { view: NavView; onChange: (view: NavVie
  */
 export function Sidebar({ open }: { open: boolean }) {
   const { t, i18n } = useTranslation();
+  const scroll = useScrollEdges();
   const sections = useNavCollapsedPref();
   const privileges = useEffectivePrivileges();
   const [query, setQuery] = useState("");
@@ -112,10 +130,13 @@ export function Sidebar({ open }: { open: boolean }) {
   // In English and in French, whichever the interface shows.
   const matches = (key: string) => labelMatches(i18n, key, needle);
   const hidden = useHiddenMenuEntries();
+  const assistant = useAssistantStatus();
   // Rights first, then the choice of the teams: an entry every organizational group
   // of the user hides is not shown. Not known yet, or not readable, nothing is
-  // hidden: the menu does not wait for it.
+  // hidden: the menu does not wait for it. The entries of the assistant show only
+  // once oc3 says one is configured.
   const allowed = (entry: NavEntry) =>
+    (entry.assistant !== true || assistant.data?.enabled === true) &&
     (entry.privileges === undefined ||
       privileges.isError ||
       (privileges.data !== undefined && hasPrivilege(privileges.data, entry.privileges))) &&
@@ -226,15 +247,19 @@ export function Sidebar({ open }: { open: boolean }) {
 
   // The menu is at most as high as the window under the header, and scrolls its own
   // entries: a long menu would otherwise set the height of the row, and leave a void
-  // under the views sized to the window, such as the assistant.
+  // under the views sized to the window, such as the assistant. Its scrollbar is
+  // hidden: the menu still scrolls with the wheel, a touch or the keyboard, and a
+  // fade over an edge tells entries are out of sight there.
   return (
     <aside
+      ref={scroll.ref}
       id="app-sidebar"
       inert={!open}
-      className={`sticky top-0 max-h-[calc(100dvh-2.75rem)] self-start overflow-x-hidden overflow-y-auto border-r border-line bg-surface-raised transition-[width] duration-200 ease-out ${
+      className={`sticky top-0 max-h-[calc(100dvh-2.75rem)] [scrollbar-width:none] self-start overflow-x-hidden overflow-y-auto border-r border-line bg-surface-raised transition-[width] duration-200 ease-out [&::-webkit-scrollbar]:hidden ${
         open ? "w-52" : "w-0 border-r-0"
       }`}
     >
+      <EdgeFade edge="top" visible={scroll.above} />
       <nav
         aria-label={t("nav.main")}
         aria-keyshortcuts="n"
@@ -320,6 +345,7 @@ export function Sidebar({ open }: { open: boolean }) {
           </div>
         )}
       </nav>
+      <EdgeFade edge="bottom" visible={scroll.below} />
     </aside>
   );
 }

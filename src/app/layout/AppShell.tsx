@@ -7,6 +7,7 @@ import { AboutPage } from "@/features/about/AboutPage";
 import { SignIn } from "@/features/auth/SignIn";
 import opensvcLogo from "@/assets/opensvc-logo.svg";
 import { Sidebar } from "./Sidebar";
+import { useAppTop } from "./app-top";
 import { PeekPanel } from "./PeekPanel";
 import { PanelAnchor } from "./PanelAnchor";
 import { PanelSideProvider } from "./PanelSideProvider";
@@ -57,6 +58,8 @@ export function AppShell() {
   const user = useEffectiveUser();
   const { pathname } = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(readSidebarOpen);
+  const [topEl, setTopEl] = useState<HTMLDivElement | null>(null);
+  useAppTop(topEl);
 
   function toggleSidebar() {
     setSidebarOpen((previous) => {
@@ -127,7 +130,8 @@ export function AppShell() {
       <PanelSideProvider>
         <div className="grid min-h-dvh grid-rows-[auto_1fr_auto] bg-surface text-ink">
           <AccountAppearance />
-          <div>
+          {/* The top of the interface: the panels open below it (`useAppTop`). */}
+          <div ref={setTopEl}>
             <header className="flex h-11 items-center gap-4 border-b border-line bg-surface-raised px-3">
               <button
                 type="button"

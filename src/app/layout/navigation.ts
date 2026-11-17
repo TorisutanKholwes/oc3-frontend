@@ -23,6 +23,7 @@ export type MenuId =
   | "view-actions"
   | "view-checks"
   | "view-node-net"
+  | "view-net"
   | "view-disks"
   | "view-disks-quotas"
   | "view-arrays"
@@ -40,6 +41,8 @@ export type MenuId =
   | "adm-usr"
   | "adm-groups"
   | "adm-claim-mappings"
+  | "adm-om3-grants"
+  | "adm-sysreport"
   | "adm-form-connectors"
   | "adm-ai-resources"
   | "adm-ai-skills"
@@ -78,6 +81,7 @@ export interface NavEntry {
     | "/checks/defaults"
     | "/checks/contextual"
     | "/networks"
+    | "/networks/declared"
     | "/disks"
     | "/quotas"
     | "/arrays"
@@ -92,6 +96,8 @@ export interface NavEntry {
     | "/logs"
     | "/filters"
     | "/claim-mappings"
+    | "/om3-grants"
+    | "/sysreport-access"
     | "/form-connectors"
     | "/ai-resources"
     | "/ai-skills"
@@ -135,6 +141,11 @@ export interface NavEntry {
    * whoever opens its address, its actions checking their own privilege.
    */
   privileges?: readonly string[];
+  /**
+   * True for the entries of the AI assistant: shown only when oc3 has one
+   * configured (`/assistant/status`, enabled), whoever the user.
+   */
+  assistant?: true;
 }
 
 /**
@@ -164,7 +175,7 @@ export const NAV_TOP: NavEntry[] = [
   },
   // The conversation with the AI assistant, right after the dashboard: a way into
   // the estate as a whole rather than a view of one kind of object.
-  { to: "/ai", menuId: "view-ai", labelKey: "nav.ai", icon: "ai" },
+  { to: "/ai", menuId: "view-ai", labelKey: "nav.ai", icon: "ai", assistant: true },
 ];
 
 /**
@@ -201,7 +212,21 @@ export const NAV_CATEGORIES: NavCategory[] = [
     labelKey: "nav.categories.inventory",
     view: "operator",
     entries: [
-      { to: "/networks", menuId: "view-node-net", labelKey: "nav.networks", icon: "network" },
+      // The declared networks, as the historical "Networks" view; the node
+      // addresses below them, as its "Node networks".
+      {
+        to: "/networks/declared",
+        menuId: "view-net",
+        labelKey: "nav.declaredNetworks",
+        icon: "declaredNetwork",
+      },
+      {
+        to: "/networks",
+        menuId: "view-node-net",
+        labelKey: "nav.networks",
+        icon: "network",
+        exact: true,
+      },
       { to: "/disks", menuId: "view-disks", labelKey: "nav.disks", icon: "disk" },
       { to: "/quotas", menuId: "view-disks-quotas", labelKey: "nav.quotas", icon: "disk" },
       { to: "/arrays", menuId: "view-arrays", labelKey: "nav.arrays", icon: "array" },
@@ -306,6 +331,23 @@ export const NAV_CATEGORIES: NavCategory[] = [
         menuId: "adm-claim-mappings",
         labelKey: "nav.claimMappings",
         icon: "claimMapping",
+        privileges: ["Manager"],
+      },
+      // The om3 grants the collector, as the OpenID Connect provider of the
+      // clusters, gives the teams: Manager only, as the api.
+      {
+        to: "/om3-grants",
+        menuId: "adm-om3-grants",
+        labelKey: "nav.om3Grants",
+        icon: "om3Grant",
+        privileges: ["Manager"],
+      },
+      // Who sees the sensitive sysreport files: Manager only, as the api's writes.
+      {
+        to: "/sysreport-access",
+        menuId: "adm-sysreport",
+        labelKey: "nav.sysreportAccess",
+        icon: "sysreportAccess",
         privileges: ["Manager"],
       },
       // Who the alerts are sent to, by mail or to the team messaging.
@@ -429,7 +471,8 @@ export const NAV_CATEGORIES: NavCategory[] = [
     ],
   },
   // The texts the assistant reads: AIManager, as the api; the model takes them as
-  // instructions, for every user they are published to.
+  // instructions, for every user they are published to. Without an assistant
+  // configured, nothing reads them: the section goes.
   {
     key: "assistant",
     labelKey: "nav.categories.assistant",
@@ -441,6 +484,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
         labelKey: "nav.aiResources",
         icon: "aiResource",
         privileges: ["AIManager"],
+        assistant: true,
       },
       {
         to: "/ai-skills",
@@ -448,6 +492,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
         labelKey: "nav.aiSkills",
         icon: "aiSkill",
         privileges: ["AIManager"],
+        assistant: true,
       },
     ],
   },

@@ -23,7 +23,8 @@
       "assistant": "AI assistant"
     },
     "apps": "Apps",
-    "networks": "Networks",
+    "networks": "Node networks",
+    "declaredNetworks": "Networks",
     "disks": "Disks",
     "groups": "Groups",
     "tags": "Tags",
@@ -79,7 +80,9 @@
     "saves": "Backups",
     "notifications": "Notifications",
     "aiResources": "Resources",
-    "aiSkills": "Skills"
+    "aiSkills": "Skills",
+    "om3Grants": "om3 grants",
+    "sysreportAccess": "Sysreport access"
   },
   "shortcuts": {
     "title": "Keyboard shortcuts",
@@ -255,7 +258,8 @@
         "alerts": "Open alerts",
         "checks": "Values against their thresholds",
         "compliance": "Modules checked and fixed",
-        "logs": "Collector log of the node"
+        "logs": "Collector log of the node",
+        "topology": "Its services, their nodes, and where they are"
       }
     },
     "actions": {
@@ -1025,7 +1029,9 @@
         "logs": "Collector log of the service",
         "instances": "Instances on each node",
         "alerts": "Open alerts",
-        "resinfo": "Keys the resources declare"
+        "resinfo": "Keys the resources declare",
+        "topology": "Its nodes, their services, and where they are",
+        "startup": "The order in which the agent starts its resources, on each node"
       },
       "instances": "Status",
       "alerts": "Alerts",
@@ -1433,6 +1439,9 @@
           "done_other": "{{count}} application codes deleted."
         }
       }
+    },
+    "related": {
+      "label": "Application data"
     }
   },
   "networks": {
@@ -1460,7 +1469,7 @@
       "net_comment": "Comment",
       "net_team_responsible": "Responsible team"
     },
-    "title": "Networks",
+    "title": "Node networks",
     "detail": {
       "title": "IP address",
       "groups": {
@@ -1474,7 +1483,7 @@
     "create": {
       "open": "New network",
       "title": "New network",
-      "intro": "Declare an IPv4 network. The Networks view lists node addresses, not declared networks: node addresses inside the range will show its name, gateway and range in the Network column.",
+      "intro": "Declare an IPv4 network. Node addresses inside its range show its name, gateway and range in the Node networks view; its segments are declared from its detail in the Networks view.",
       "noRow": "The network was created but not returned.",
       "hostBits": "This address has host bits set; the network address is {{network}}.",
       "useNetwork": "Use {{network}}",
@@ -1544,6 +1553,85 @@
           "running": "Deleting…",
           "done_one": "1 IP address deleted.",
           "done_other": "{{count}} IP addresses deleted."
+        }
+      }
+    },
+    "declared": {
+      "title": "Networks",
+      "intro": "The IPv4 networks declared in the collector, with their gateway, VLAN and responsible team. Open one for its segments, their responsible groups and its addresses.",
+      "addressesLink": "Addresses reported by the nodes",
+      "fields": {
+        "id": "Record id",
+        "name": "Name",
+        "network": "Network address",
+        "netmask": "Prefix",
+        "cidr": "Network",
+        "begin": "Range start",
+        "end": "Range end",
+        "broadcast": "Broadcast",
+        "gateway": "Gateway",
+        "pvid": "VLAN (PVID)",
+        "prio": "Priority",
+        "team_responsible": "Responsible team",
+        "comment": "Comment",
+        "updated": "Updated"
+      },
+      "detail": {
+        "title": "Network",
+        "tabs": "Network details",
+        "groups": {
+          "identity": "Network",
+          "ownership": "Responsibility",
+          "record": "Record"
+        },
+        "editHint": "The NetworkManagers of the responsible team change the network. A new network or prefix must still hold its segments; an empty gateway unsets it.",
+        "cidrInvalid": "Type the network as address/prefix, for example 10.0.0.0/24."
+      },
+      "delete": {
+        "question": "Delete the network {{network}}?",
+        "consequence": "Its segments and their responsible groups are deleted with it. The node addresses stay, outside any declared network.",
+        "done": "Network {{network}} deleted."
+      },
+      "tabs": {
+        "segments": "Segments",
+        "ips": "Addresses"
+      },
+      "segments": {
+        "intro": "Address ranges of the network. The members of the groups responsible for a segment allocate its addresses.",
+        "none": "No segment: the whole network is listed in its addresses.",
+        "size_one": "{{formatted}} address",
+        "size_other": "{{formatted}} addresses",
+        "edit": "Edit",
+        "save": "Save",
+        "saving": "Saving…",
+        "deleteQuestion": "Delete the segment {{range}}? Its responsible groups are detached from it."
+      },
+      "responsibles": {
+        "title": "Responsible groups",
+        "none": "No group is responsible for this segment.",
+        "add": "Add a responsible group",
+        "remove": "Remove {{group}}",
+        "added": "{{group}} is now responsible for the segment.",
+        "removed": "{{group}} is no longer responsible for the segment.",
+        "noMatch": "No matching group."
+      },
+      "ips": {
+        "intro": "The addresses of the segments your groups are responsible for (all of them for a manager), or of the whole network when it has no segment, with the nodes reporting them.",
+        "ip": "Address",
+        "segment": "Segment",
+        "nodes": "Nodes",
+        "free": "free",
+        "noSegment": "No segment",
+        "freeOnly": "Free addresses only",
+        "range_one": "{{from}}–{{to}} of {{total}} address",
+        "range_other": "{{from}}–{{to}} of {{total}} addresses",
+        "previous": "Previous",
+        "next": "Next",
+        "none": "No address to list.",
+        "noneFree": "No free address.",
+        "refused": {
+          "forbidden": "None of your groups is responsible for a segment of this network: its addresses are listed to the groups responsible for its segments, and to managers.",
+          "tooMany": "This network holds too many addresses to list them all (more than 65,536). Declare segments to narrow it."
         }
       }
     }
@@ -1823,6 +1911,20 @@
       "mismatch": "The two passwords differ.",
       "submit": "Create",
       "submitting": "Creating…"
+    },
+    "identities": {
+      "title": "Identity provider",
+      "hint": "Identities of {{issuer}} signing in as this account. A browser sign-in links its own; a service account used by an automation is linked here by the sub claim of its tokens.",
+      "none": "No identity linked.",
+      "lastSignIn": "Last browser sign-in:",
+      "neverSignedIn": "Never signed in through the browser.",
+      "subject": "Subject (sub claim) of the identity to link",
+      "link": "Link the identity",
+      "unlink": "Unlink",
+      "unlinkQuestion": "Unlink the identity {{subject}} from {{email}}? Its tokens will no longer sign in.",
+      "unlinkConfirm": "Unlink",
+      "unlinking": "Unlinking…",
+      "oneOnly": "An account has one identity at most: unlink this one to link another."
     }
   },
   "profile": {
@@ -3654,6 +3756,81 @@
       "consequence": "The accounts the rules put in a team no other rule names leave it at once; those added by hand stay, and the team is managed by hand again. The teams other rules still name follow the claims at the next sign-in of each account."
     }
   },
+  "om3Grants": {
+    "title": "om3 grants",
+    "new": "New rule",
+    "intro": "The collector is the OpenID Connect provider of the om3 clusters: their webapps and the om CLI sign their users in here. A user gets on a cluster the om3 grants of the rules naming one of their teams and this cluster, or every cluster. Without any grant, the sign-in is refused.",
+    "setup": "An om3 cluster signs its users in with the collector once its listener names this issuer and its own cluster id as client id:",
+    "setupClientId": "The client id of a cluster is its cluster id, shown on the Clusters page. The webapps must be reached by a node name or address the collector knows, or a host allowed by server.oidc_provider.redirect_hosts.",
+    "disabled": "The collector is not configured as an OpenID Connect provider (server.oidc_provider.enable): the rules have no effect until it is.",
+    "empty": "No rule: nobody may sign in to an om3 cluster with the collector.",
+    "everyCluster": "Every cluster",
+    "fields": {
+      "team": "Team",
+      "cluster": "Cluster",
+      "grants": "om3 grants",
+      "updated": "Updated"
+    },
+    "form": {
+      "createTitle": "New om3 grant rule",
+      "editTitle": "om3 grants of {{team}}",
+      "rule": "Rule",
+      "pickTeam": "Pick a team",
+      "teamHint": "The members of the team get the grants. A private team (user_…) names a single user.",
+      "clusterHint": "One rule per team and cluster; a rule on every cluster adds to those of a cluster.",
+      "grantsHint": "om3 grants separated by spaces: root, prioritizer, squatter, blacklistadmin, scraper, and admin, operator, guest alone or on a namespace or a pattern (admin:prod, guest:*).",
+      "saving": "Saving…",
+      "saveCreate": "Create",
+      "saveEdit": "Save",
+      "saved": "Saved",
+      "delete": "Delete the rule",
+      "deleteQuestion": "Delete the om3 grant rule of {{team}}? Its members lose these grants at their next token renewal.",
+      "deleteConfirm": "Delete",
+      "deleting": "Deleting…"
+    }
+  },
+  "sysreportAccess": {
+    "title": "Sysreport access",
+    "intro": "The sysreports show the content and the changes of the files of the nodes. Those of the files matching a secure pattern are sensitive: only the managers, the members of the team responsible for the node and the teams an authorization names see them.",
+    "actions": "Actions",
+    "add": "Add",
+    "adding": "Adding…",
+    "delete": "Delete",
+    "deleteConfirm": "Delete",
+    "deleting": "Deleting…",
+    "fields": {
+      "pattern": "Pattern",
+      "group_name": "Team",
+      "fset_name": "Filterset"
+    },
+    "secure": {
+      "title": "Secure patterns",
+      "intro": "Regular expressions (RE2 syntax) matched from the start of the file path: .*/etc/shadow marks that file on every node, /etc/ everything under /etc.",
+      "empty": "No secure pattern: every file is sensitive.",
+      "deleteQuestion": "Delete the secure pattern {{pattern}}?"
+    },
+    "allow": {
+      "title": "Authorizations",
+      "intro": "The members of the team see the sensitive files matching the pattern on the nodes of the filterset.",
+      "empty": "No authorization: only the managers and the node responsibles see the sensitive files.",
+      "pickTeam": "Pick a team",
+      "pickFilterset": "Pick a filterset",
+      "deleteQuestion": "Delete the authorization of {{team}} on {{filterset}} for {{pattern}}?"
+    }
+  },
+  "oidcAuthorize": {
+    "title": "Sign in to the cluster {{cluster}}",
+    "noRequest": "No sign-in request: start again from the om3 cluster.",
+    "user": "As",
+    "cluster": "Cluster",
+    "returnTo": "Back to",
+    "grants": "om3 grants",
+    "noGrant": "You have no om3 grant on this cluster: ask a Manager for one.",
+    "approve": "Continue",
+    "deny": "Cancel",
+    "back": "Back to the cluster",
+    "redirecting": "Going back to the cluster {{cluster}}…"
+  },
   "fieldConstraints": {
     "title": "Field values",
     "add": "New constraint",
@@ -4035,7 +4212,8 @@
     "noMatch": "No action matches.",
     "dataDescriptions": {
       "delete": "Remove the selected items from the collector, for good."
-    }
+    },
+    "topology": "Show the topology"
   },
   "commonality": {
     "title": "Commonality of {{what}}",
@@ -5828,6 +6006,84 @@
       "disk_group": "Disk group",
       "node": "Node",
       "service": "Service"
+    }
+  },
+  "topology": {
+    "title": "Topology",
+    "tab": "Topology",
+    "summary": "Topology of {{vertices}} objects and {{edges}} links: {{layers}}",
+    "roleDescription": "graph",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit the drawing to the frame",
+    "redraw": "Redraw",
+    "noLayer": "Check at least one layer",
+    "groups": {
+      "objects": "Objects",
+      "storage": "Storage",
+      "locations": "Locations"
+    },
+    "layers": {
+      "nodes": "Nodes",
+      "services": "Services",
+      "apps": "Applications",
+      "envs": "Environments",
+      "resources": "Resources",
+      "disks": "Disks",
+      "arrays": "Arrays",
+      "san": "SAN switches",
+      "hvs": "Hypervisors",
+      "hvpools": "Hypervisor pools",
+      "hvvdcs": "Virtual datacenters",
+      "enclosures": "Enclosures",
+      "racks": "Racks",
+      "rooms": "Rooms",
+      "buildings": "Buildings",
+      "cities": "Cities",
+      "countries": "Countries"
+    },
+    "loading": "Loading the topology…",
+    "error": "Cannot draw the topology: {{message}}",
+    "empty": "Nothing to draw.",
+    "noStart": "Nothing to draw: no node, service or application to start from.",
+    "hint": "Click a node, a service or an application to open it. Drag the background to pan, a vertex to move it; the wheel zooms.",
+    "hintFocus": "Click a node, a service or an application to open it. Drag the background to pan, a vertex to move it; the wheel zooms once the drawing is clicked, or with Ctrl.",
+    "start": {
+      "from": "Starting from {{what}}",
+      "nodes_one": "{{count}} node",
+      "nodes_other": "{{count}} nodes",
+      "services_one": "{{count}} service",
+      "services_other": "{{count}} services",
+      "apps_one": "{{count}} application",
+      "apps_other": "{{count}} applications"
+    }
+  },
+  "startup": {
+    "tab": "Startup",
+    "node": "Node",
+    "showDisabled": "Show the disabled resources",
+    "loading": "Loading the startup…",
+    "error": "Cannot draw the startup: {{message}}",
+    "noNode": "The service has no instance: no node to draw its startup on.",
+    "noConfig": "The configuration of the service was never received: nothing to draw.",
+    "summary_one": "Startup of the service on {{nodename}}: {{count}} resource",
+    "summary_other": "Startup of the service on {{nodename}}: {{count}} resources",
+    "hint": "From the top down, the order in which the agent starts the resources, read from the configuration, each with the state the node last reported. Dashed: what a start waits for (start_requires). Hover a step for its details.",
+    "requires": "{{from}} waits for {{to}} {{states}}",
+    "serial": "in series",
+    "unreported": "not reported",
+    "kinds": {
+      "service": "service",
+      "node": "node",
+      "encap": "encap node"
+    },
+    "flags": {
+      "parallel": "parallel",
+      "disabled": "disabled",
+      "optional": "optional",
+      "monitor": "monitored",
+      "standby": "standby",
+      "encap": "encap"
     }
   }
 }

@@ -289,8 +289,9 @@ export function RelatedTable<T>({
   );
 }
 
+// Focused, a row is marked by its background alone, not framed.
 const OPENING_ROW =
-  "cursor-pointer hover:bg-surface-sunken/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent";
+  "cursor-pointer hover:bg-surface-sunken/60 focus-visible:bg-surface-sunken focus-visible:outline-none";
 
 /** The handlers of a row that opens: a click beside its links and buttons, Enter or Space. */
 function openingRow(open: () => void) {

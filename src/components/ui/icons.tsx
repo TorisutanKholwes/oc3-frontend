@@ -717,6 +717,42 @@ export function KeyIcon(props: IconProps) {
   );
 }
 
+/** An identity card: the claims of a token, mapped to teams. */
+export function IdCardIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        fillRule="evenodd"
+        d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm4.5 3.2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-3.3 8c.3-1.8 1.7-2.8 3.3-2.8s3 1 3.3 2.8ZM13.5 9h5v1.6h-5Zm0 3.4h4V14h-4Z"
+      />
+    </Svg>
+  );
+}
+
+/** A shield with a check mark: rights granted. */
+export function ShieldCheckIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        fillRule="evenodd"
+        d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5Zm-1.4 13.8 6-6-1.4-1.4-4.6 4.6-1.8-1.8-1.4 1.4Z"
+      />
+    </Svg>
+  );
+}
+
+/** A file with a keyhole: files whose reading is restricted. */
+export function FileLockIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        fillRule="evenodd"
+        d="M6.5 2H13v5.5c0 .8.7 1.5 1.5 1.5H20v11.5c0 .8-.7 1.5-1.5 1.5h-12c-.8 0-1.5-.7-1.5-1.5v-17C5 2.7 5.7 2 6.5 2Zm8 .4 5.1 5.1h-5.1V2.4ZM11 15.2A2 2 0 1 1 13 15.2L13.6 18.5H10.4Z"
+      />
+    </Svg>
+  );
+}
+
 /** Files (`file16`, fa-file). */
 export function FileIcon(props: IconProps) {
   return (
@@ -986,6 +1022,48 @@ export function ListChecksIcon(props: IconProps) {
   return (
     <Svg {...props}>
       <path d="M8.3 3.3a1.1 1.1 0 0 1 0 1.6L5.1 8.1a1.1 1.1 0 0 1-1.6 0L1.9 6.5a1.1 1.1 0 1 1 1.6-1.6l.8.8 2.4-2.4a1.1 1.1 0 0 1 1.6 0Zm0 7a1.1 1.1 0 0 1 0 1.6l-3.2 3.2a1.1 1.1 0 0 1-1.6 0l-1.6-1.6a1.1 1.1 0 1 1 1.6-1.6l.8.8 2.4-2.4a1.1 1.1 0 0 1 1.6 0ZM11 5.5c0-.8.7-1.5 1.5-1.5h8a1.5 1.5 0 0 1 0 3h-8c-.8 0-1.5-.7-1.5-1.5Zm0 7c0-.8.7-1.5 1.5-1.5h8a1.5 1.5 0 0 1 0 3h-8c-.8 0-1.5-.7-1.5-1.5ZM4.5 17.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm6.5 2c0-.8.7-1.5 1.5-1.5h8a1.5 1.5 0 0 1 0 3h-8c-.8 0-1.5-.7-1.5-1.5Z" />
+    </Svg>
+  );
+}
+
+/** Zooming out, the counterpart of the plus. */
+export function MinusIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4.7 10.8h14.6a1.2 1.2 0 1 1 0 2.4H4.7a1.2 1.2 0 1 1 0-2.4Z" />
+    </Svg>
+  );
+}
+
+/** Fitting a drawing to its frame: four corners pointing out. */
+export function FitIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/** Topology: three objects and the links between them, as a graph. */
+export function TopologyIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        d="M6 7.5 12 17M18 7.5 12 17M6.5 5h11"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <circle cx="5" cy="5" r="3" />
+      <circle cx="19" cy="5" r="3" />
+      <circle cx="12" cy="18.5" r="3.2" />
     </Svg>
   );
 }

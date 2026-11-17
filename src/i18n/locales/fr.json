@@ -23,7 +23,8 @@
       "assistant": "Assistant IA"
     },
     "apps": "Codes application",
-    "networks": "Réseaux",
+    "networks": "Réseaux des nœuds",
+    "declaredNetworks": "Réseaux",
     "disks": "Disques",
     "groups": "Groupes",
     "tags": "Tags",
@@ -79,7 +80,9 @@
     "saves": "Sauvegardes",
     "notifications": "Notifications",
     "aiResources": "Ressources",
-    "aiSkills": "Skills"
+    "aiSkills": "Skills",
+    "om3Grants": "Droits om3",
+    "sysreportAccess": "Accès aux sysreports"
   },
   "shortcuts": {
     "title": "Raccourcis clavier",
@@ -255,7 +258,8 @@
         "alerts": "Alertes ouvertes",
         "checks": "Valeurs face à leurs seuils",
         "compliance": "Modules vérifiés et corrigés",
-        "logs": "Journal du collector pour le nœud"
+        "logs": "Journal du collector pour le nœud",
+        "topology": "Ses services, leurs nœuds, et où ils se trouvent"
       }
     },
     "actions": {
@@ -1025,7 +1029,9 @@
         "logs": "Journal du collector pour le service",
         "instances": "Instances sur chaque nœud",
         "alerts": "Alertes ouvertes",
-        "resinfo": "Clés déclarées par les ressources"
+        "resinfo": "Clés déclarées par les ressources",
+        "topology": "Ses nœuds, leurs services, et où ils se trouvent",
+        "startup": "L'ordre dans lequel l'agent démarre ses ressources, sur chaque nœud"
       },
       "instances": "Statut",
       "alerts": "Alertes",
@@ -1433,6 +1439,9 @@
           "done_other": "{{count}} codes application supprimés."
         }
       }
+    },
+    "related": {
+      "label": "Données de l'application"
     }
   },
   "networks": {
@@ -1460,7 +1469,7 @@
       "net_comment": "Commentaire",
       "net_team_responsible": "Équipe responsable"
     },
-    "title": "Réseaux",
+    "title": "Réseaux des nœuds",
     "detail": {
       "title": "Adresse IP",
       "groups": {
@@ -1474,7 +1483,7 @@
     "create": {
       "open": "Nouveau réseau",
       "title": "Nouveau réseau",
-      "intro": "Déclarer un réseau IPv4. La vue Réseaux liste les adresses des nœuds, pas les réseaux déclarés : les adresses de nœud comprises dans la plage afficheront son nom, sa passerelle et sa plage dans la colonne Réseau.",
+      "intro": "Déclarer un réseau IPv4. Les adresses de nœud comprises dans sa plage affichent son nom, sa passerelle et sa plage dans la vue Réseaux des nœuds ; ses segments se déclarent depuis son détail dans la vue Réseaux.",
       "noRow": "Le réseau a été créé mais n'a pas été renvoyé.",
       "hostBits": "Cette adresse a des bits d'hôte ; l'adresse du réseau est {{network}}.",
       "useNetwork": "Utiliser {{network}}",
@@ -1544,6 +1553,85 @@
           "running": "Suppression…",
           "done_one": "1 adresse IP supprimée.",
           "done_other": "{{count}} adresses IP supprimées."
+        }
+      }
+    },
+    "declared": {
+      "title": "Réseaux",
+      "intro": "Les réseaux IPv4 déclarés dans le collecteur, avec leur passerelle, leur VLAN et leur équipe responsable. Ouvrez-en un pour ses segments, leurs groupes responsables et ses adresses.",
+      "addressesLink": "Adresses remontées par les nœuds",
+      "fields": {
+        "id": "Identifiant d'enregistrement",
+        "name": "Nom",
+        "network": "Adresse du réseau",
+        "netmask": "Préfixe",
+        "cidr": "Réseau",
+        "begin": "Début de plage",
+        "end": "Fin de plage",
+        "broadcast": "Diffusion",
+        "gateway": "Passerelle",
+        "pvid": "VLAN (PVID)",
+        "prio": "Priorité",
+        "team_responsible": "Équipe responsable",
+        "comment": "Commentaire",
+        "updated": "Mis à jour"
+      },
+      "detail": {
+        "title": "Réseau",
+        "tabs": "Détails du réseau",
+        "groups": {
+          "identity": "Réseau",
+          "ownership": "Responsabilité",
+          "record": "Enregistrement"
+        },
+        "editHint": "Les NetworkManagers de l'équipe responsable modifient le réseau. Une nouvelle adresse ou un nouveau préfixe doit toujours contenir ses segments ; une passerelle vide la retire.",
+        "cidrInvalid": "Saisissez le réseau sous la forme adresse/préfixe, par exemple 10.0.0.0/24."
+      },
+      "delete": {
+        "question": "Supprimer le réseau {{network}} ?",
+        "consequence": "Ses segments et leurs groupes responsables sont supprimés avec lui. Les adresses des nœuds restent, hors de tout réseau déclaré.",
+        "done": "Réseau {{network}} supprimé."
+      },
+      "tabs": {
+        "segments": "Segments",
+        "ips": "Adresses"
+      },
+      "segments": {
+        "intro": "Plages d'adresses du réseau. Les membres des groupes responsables d'un segment en attribuent les adresses.",
+        "none": "Aucun segment : tout le réseau est listé dans ses adresses.",
+        "size_one": "{{formatted}} adresse",
+        "size_other": "{{formatted}} adresses",
+        "edit": "Modifier",
+        "save": "Enregistrer",
+        "saving": "Enregistrement…",
+        "deleteQuestion": "Supprimer le segment {{range}} ? Ses groupes responsables en sont détachés."
+      },
+      "responsibles": {
+        "title": "Groupes responsables",
+        "none": "Aucun groupe n'est responsable de ce segment.",
+        "add": "Ajouter un groupe responsable",
+        "remove": "Retirer {{group}}",
+        "added": "{{group}} est désormais responsable du segment.",
+        "removed": "{{group}} n'est plus responsable du segment.",
+        "noMatch": "Aucun groupe correspondant."
+      },
+      "ips": {
+        "intro": "Les adresses des segments dont vos groupes sont responsables (toutes pour un manager), ou de tout le réseau quand il n'a pas de segment, avec les nœuds qui les remontent.",
+        "ip": "Adresse",
+        "segment": "Segment",
+        "nodes": "Nœuds",
+        "free": "libre",
+        "noSegment": "Hors segment",
+        "freeOnly": "Adresses libres seulement",
+        "range_one": "{{from}}–{{to}} sur {{total}} adresse",
+        "range_other": "{{from}}–{{to}} sur {{total}} adresses",
+        "previous": "Précédentes",
+        "next": "Suivantes",
+        "none": "Aucune adresse à lister.",
+        "noneFree": "Aucune adresse libre.",
+        "refused": {
+          "forbidden": "Aucun de vos groupes n'est responsable d'un segment de ce réseau : ses adresses sont listées pour les groupes responsables de ses segments, et pour les managers.",
+          "tooMany": "Ce réseau compte trop d'adresses pour les lister toutes (plus de 65 536). Déclarez des segments pour le restreindre."
         }
       }
     }
@@ -1823,6 +1911,20 @@
       "mismatch": "Les deux mots de passe diffèrent.",
       "submit": "Créer",
       "submitting": "Création…"
+    },
+    "identities": {
+      "title": "Fournisseur d'identité",
+      "hint": "Identités de {{issuer}} qui se connectent avec ce compte. Une connexion dans le navigateur lie la sienne ; un compte de service utilisé par une automatisation se lie ici par la claim sub de ses jetons.",
+      "none": "Aucune identité liée.",
+      "lastSignIn": "Dernière connexion dans le navigateur :",
+      "neverSignedIn": "Jamais connecté dans le navigateur.",
+      "subject": "Sujet (claim sub) de l'identité à lier",
+      "link": "Lier l'identité",
+      "unlink": "Délier",
+      "unlinkQuestion": "Délier l'identité {{subject}} de {{email}} ? Ses jetons ne permettront plus de se connecter.",
+      "unlinkConfirm": "Délier",
+      "unlinking": "Déliaison…",
+      "oneOnly": "Un compte a au plus une identité : délie celle-ci pour en lier une autre."
     }
   },
   "profile": {
@@ -3654,6 +3756,81 @@
       "consequence": "Les comptes que les règles ont mis dans une équipe qu'aucune autre règle ne nomme la quittent aussitôt ; ceux ajoutés à la main restent, et l'équipe redevient gérée à la main. Les équipes que d'autres règles nomment encore suivent les revendications à la prochaine connexion de chaque compte."
     }
   },
+  "om3Grants": {
+    "title": "Droits om3",
+    "new": "Nouvelle règle",
+    "intro": "Le collector est le fournisseur OpenID Connect des clusters om3 : leurs webapps et la CLI om y connectent leurs utilisateurs. Un utilisateur obtient sur un cluster les droits om3 des règles qui nomment une de ses équipes et ce cluster, ou tous les clusters. Sans aucun droit, la connexion est refusée.",
+    "setup": "Un cluster om3 connecte ses utilisateurs avec le collector dès que son listener désigne cet issuer et son propre identifiant de cluster comme client id :",
+    "setupClientId": "Le client id d'un cluster est son identifiant de cluster, affiché sur la page Clusters. Les webapps doivent être atteintes par un nom ou une adresse de nœud que le collector connaît, ou par un hôte autorisé par server.oidc_provider.redirect_hosts.",
+    "disabled": "Le collector n'est pas configuré comme fournisseur OpenID Connect (server.oidc_provider.enable) : les règles sont sans effet tant qu'il ne l'est pas.",
+    "empty": "Aucune règle : personne ne peut se connecter à un cluster om3 avec le collector.",
+    "everyCluster": "Tous les clusters",
+    "fields": {
+      "team": "Équipe",
+      "cluster": "Cluster",
+      "grants": "Droits om3",
+      "updated": "Modifiée"
+    },
+    "form": {
+      "createTitle": "Nouvelle règle de droits om3",
+      "editTitle": "Droits om3 de {{team}}",
+      "rule": "Règle",
+      "pickTeam": "Choisir une équipe",
+      "teamHint": "Les membres de l'équipe reçoivent les droits. Une équipe privée (user_…) désigne un seul utilisateur.",
+      "clusterHint": "Une règle par équipe et par cluster ; une règle sur tous les clusters s'ajoute à celles d'un cluster.",
+      "grantsHint": "Droits om3 séparés par des espaces : root, prioritizer, squatter, blacklistadmin, scraper, et admin, operator, guest seuls ou sur un namespace ou un motif (admin:prod, guest:*).",
+      "saving": "Enregistrement…",
+      "saveCreate": "Créer",
+      "saveEdit": "Enregistrer",
+      "saved": "Enregistrée",
+      "delete": "Supprimer la règle",
+      "deleteQuestion": "Supprimer la règle de droits om3 de {{team}} ? Ses membres perdent ces droits au prochain renouvellement de leur jeton.",
+      "deleteConfirm": "Supprimer",
+      "deleting": "Suppression…"
+    }
+  },
+  "sysreportAccess": {
+    "title": "Accès aux sysreports",
+    "intro": "Les sysreports montrent le contenu et les changements des fichiers des nœuds. Ceux des fichiers correspondant à un motif sécurisé sont sensibles : seuls les managers, les membres de l'équipe responsable du nœud et les équipes qu'une autorisation désigne les voient.",
+    "actions": "Actions",
+    "add": "Ajouter",
+    "adding": "Ajout…",
+    "delete": "Supprimer",
+    "deleteConfirm": "Supprimer",
+    "deleting": "Suppression…",
+    "fields": {
+      "pattern": "Motif",
+      "group_name": "Équipe",
+      "fset_name": "Filterset"
+    },
+    "secure": {
+      "title": "Motifs sécurisés",
+      "intro": "Expressions régulières (syntaxe RE2) comparées depuis le début du chemin du fichier : .*/etc/shadow désigne ce fichier sur tous les nœuds, /etc/ tout ce qui est sous /etc.",
+      "empty": "Aucun motif sécurisé : tous les fichiers sont sensibles.",
+      "deleteQuestion": "Supprimer le motif sécurisé {{pattern}} ?"
+    },
+    "allow": {
+      "title": "Autorisations",
+      "intro": "Les membres de l'équipe voient les fichiers sensibles correspondant au motif sur les nœuds du filterset.",
+      "empty": "Aucune autorisation : seuls les managers et les responsables des nœuds voient les fichiers sensibles.",
+      "pickTeam": "Choisir une équipe",
+      "pickFilterset": "Choisir un filterset",
+      "deleteQuestion": "Supprimer l'autorisation de {{team}} sur {{filterset}} pour {{pattern}} ?"
+    }
+  },
+  "oidcAuthorize": {
+    "title": "Connexion au cluster {{cluster}}",
+    "noRequest": "Aucune demande de connexion : recommencez depuis le cluster om3.",
+    "user": "En tant que",
+    "cluster": "Cluster",
+    "returnTo": "Retour vers",
+    "grants": "Droits om3",
+    "noGrant": "Vous n'avez aucun droit om3 sur ce cluster : demandez-en un à un Manager.",
+    "approve": "Continuer",
+    "deny": "Annuler",
+    "back": "Retour au cluster",
+    "redirecting": "Retour au cluster {{cluster}}…"
+  },
   "fieldConstraints": {
     "title": "Valeurs des champs",
     "add": "Nouvelle contrainte",
@@ -4035,7 +4212,8 @@
     "noMatch": "Aucune action ne correspond.",
     "dataDescriptions": {
       "delete": "Supprimer définitivement les éléments sélectionnés du collecteur."
-    }
+    },
+    "topology": "Afficher la topologie"
   },
   "commonality": {
     "title": "Points communs de {{what}}",
@@ -5828,6 +6006,84 @@
       "disk_group": "Groupe de disques",
       "node": "Nœud",
       "service": "Service"
+    }
+  },
+  "topology": {
+    "title": "Topologie",
+    "tab": "Topologie",
+    "summary": "Topologie de {{vertices}} objets et {{edges}} liens : {{layers}}",
+    "roleDescription": "graphe",
+    "zoomIn": "Zoomer",
+    "zoomOut": "Dézoomer",
+    "fit": "Ajuster le dessin au cadre",
+    "redraw": "Redessiner",
+    "noLayer": "Cochez au moins une couche",
+    "groups": {
+      "objects": "Objets",
+      "storage": "Stockage",
+      "locations": "Emplacements"
+    },
+    "layers": {
+      "nodes": "Nœuds",
+      "services": "Services",
+      "apps": "Applications",
+      "envs": "Environnements",
+      "resources": "Ressources",
+      "disks": "Disques",
+      "arrays": "Baies de stockage",
+      "san": "Commutateurs SAN",
+      "hvs": "Hyperviseurs",
+      "hvpools": "Pools d'hyperviseurs",
+      "hvvdcs": "Datacenters virtuels",
+      "enclosures": "Châssis",
+      "racks": "Racks",
+      "rooms": "Salles",
+      "buildings": "Bâtiments",
+      "cities": "Villes",
+      "countries": "Pays"
+    },
+    "loading": "Chargement de la topologie…",
+    "error": "Impossible de dessiner la topologie : {{message}}",
+    "empty": "Rien à dessiner.",
+    "noStart": "Rien à dessiner : aucun nœud, service ou application de départ.",
+    "hint": "Cliquez sur un nœud, un service ou une application pour l'ouvrir. Faites glisser le fond pour vous déplacer, un objet pour le bouger ; la molette zoome.",
+    "hintFocus": "Cliquez sur un nœud, un service ou une application pour l'ouvrir. Faites glisser le fond pour vous déplacer, un objet pour le bouger ; la molette zoome une fois le dessin cliqué, ou avec Ctrl.",
+    "start": {
+      "from": "À partir de {{what}}",
+      "nodes_one": "{{count}} nœud",
+      "nodes_other": "{{count}} nœuds",
+      "services_one": "{{count}} service",
+      "services_other": "{{count}} services",
+      "apps_one": "{{count}} application",
+      "apps_other": "{{count}} applications"
+    }
+  },
+  "startup": {
+    "tab": "Démarrage",
+    "node": "Nœud",
+    "showDisabled": "Afficher les ressources désactivées",
+    "loading": "Chargement du démarrage…",
+    "error": "Impossible de dessiner le démarrage : {{message}}",
+    "noNode": "Le service n'a pas d'instance : aucun nœud sur lequel dessiner son démarrage.",
+    "noConfig": "La configuration du service n'a jamais été reçue : rien à dessiner.",
+    "summary_one": "Démarrage du service sur {{nodename}} : {{count}} ressource",
+    "summary_other": "Démarrage du service sur {{nodename}} : {{count}} ressources",
+    "hint": "De haut en bas, l'ordre dans lequel l'agent démarre les ressources, lu dans la configuration, chacune avec l'état que le nœud a remonté en dernier. En pointillés : ce qu'un démarrage attend (start_requires). Survolez une étape pour son détail.",
+    "requires": "{{from}} attend {{to}} {{states}}",
+    "serial": "en série",
+    "unreported": "non remonté",
+    "kinds": {
+      "service": "service",
+      "node": "nœud",
+      "encap": "nœud encap"
+    },
+    "flags": {
+      "parallel": "parallèle",
+      "disabled": "désactivée",
+      "optional": "optionnelle",
+      "monitor": "surveillée",
+      "standby": "standby",
+      "encap": "encap"
     }
   }
 }

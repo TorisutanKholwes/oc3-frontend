@@ -12,6 +12,7 @@ import { useCanImpersonate, useImpersonate } from "./use-impersonate";
 import { UserGroupsParts } from "./UserGroupsParts";
 import { DeleteUser } from "./DeleteUser";
 import { SetUserPassword } from "./SetUserPassword";
+import { UserIdentities } from "./UserIdentities";
 
 type UserRow = components["schemas"]["UserRow"];
 
@@ -26,7 +27,9 @@ type UserRow = components["schemas"]["UserRow"];
  *
  * Under the properties, the organisational and privilege groups of the user,
  * which a GroupManager changes in place. At the foot, deleting the user, for a
- * UserManager (`DeleteUser`), and so is setting their password (`SetUserPassword`).
+ * UserManager (`DeleteUser`), and so is setting their password (`SetUserPassword`)
+ * and linking the identities of the provider a service account signs in with
+ * (`UserIdentities`).
  */
 export function UserDetailPanel({
   userId,
@@ -112,6 +115,9 @@ export function UserDetailPanel({
           )}
           {userId !== undefined && user !== null && user !== undefined && (
             <SetUserPassword userId={userId} email={user.email ?? label} isSelf={isSelf} />
+          )}
+          {userId !== undefined && user !== null && user !== undefined && (
+            <UserIdentities userId={userId} email={user.email ?? label} />
           )}
           {userId !== undefined && user !== null && user !== undefined && (
             <DeleteUser

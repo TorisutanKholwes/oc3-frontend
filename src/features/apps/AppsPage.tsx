@@ -255,10 +255,14 @@ export function AppsPage() {
         appId={creating ? undefined : search.sel}
         label={selected?.app ?? ""}
         onClose={() => {
-          update({ sel: undefined });
+          update({ sel: undefined, tab: undefined });
         }}
         onRenamed={(code) => {
           update({ sel: code });
+        }}
+        tab={search.tab}
+        onTabChange={(tab) => {
+          update({ tab });
         }}
       />
 

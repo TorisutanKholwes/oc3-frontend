@@ -30,7 +30,9 @@ import {
   UsersIcon,
   HoneycombIcon,
   HashIcon,
-  KeyIcon,
+  IdCardIcon,
+  ShieldCheckIcon,
+  FileLockIcon,
   FirewallIcon,
   LinkIcon,
   ListChecksIcon,
@@ -48,6 +50,7 @@ export type ObjectKind =
   | "resource"
   | "action"
   | "network"
+  | "declaredNetwork"
   | "disk"
   | "array"
   | "save"
@@ -80,6 +83,8 @@ export type ObjectKind =
   | "complianceLog"
   | "designer"
   | "claimMapping"
+  | "om3Grant"
+  | "sysreportAccess"
   | "fieldConstraint"
   | "compAttachment"
   | "formConnector"
@@ -111,6 +116,8 @@ const KINDS: Record<ObjectKind, { Icon: typeof ServerIcon; className: string }> 
   // An orchestration: steps of agent actions, one after the other.
   orchestration: { Icon: ListChecksIcon, className: "text-icon-service" },
   network: { Icon: NetworkIcon, className: "text-icon-network" },
+  // A network declared in the collector, the range its node addresses fall in.
+  declaredNetwork: { Icon: NetworkIcon, className: "text-icon-network" },
   disk: { Icon: DatabaseIcon, className: "text-icon-disk" },
   // A storage array: the disks it serves, in their tint.
   array: { Icon: DatabaseIcon, className: "text-icon-disk" },
@@ -168,8 +175,15 @@ const KINDS: Record<ObjectKind, { Icon: typeof ServerIcon; className: string }> 
   complianceLog: { Icon: HistoryIcon, className: "text-icon-compliance" },
   // The puzzle piece of the historical designer (`designer16`), in the compliance crimson.
   designer: { Icon: PuzzleIcon, className: "text-icon-compliance" },
-  // A key in the tint of users and teams: who gets in, and with which teams.
-  claimMapping: { Icon: KeyIcon, className: "text-icon-group" },
+  // An identity card in the tint of users and teams: the claims of the identity
+  // provider's token, mapped to teams.
+  claimMapping: { Icon: IdCardIcon, className: "text-icon-group" },
+  // A shield with a check mark in the tint of the clusters: the om3 grants the
+  // collector, as their OpenID Connect provider, gives the teams on them. Not the
+  // cluster honeycomb, which the Clusters entry already shows.
+  om3Grant: { Icon: ShieldCheckIcon, className: "text-icon-node" },
+  // A locked file in the tint of the nodes: who reads their sensitive sysreport files.
+  sysreportAccess: { Icon: FileLockIcon, className: "text-icon-node" },
   // The values allowed for node attributes: the tint of the nodes they constrain.
   fieldConstraint: { Icon: ListChecksIcon, className: "text-icon-node" },
   // A link in the tint of compliance: modulesets and rulesets tied to their targets.

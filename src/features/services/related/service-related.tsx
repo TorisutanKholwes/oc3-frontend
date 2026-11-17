@@ -1,7 +1,9 @@
 import { ObjectNotes } from "@/components/opensvc/ObjectNotes";
 import { OVERVIEW_GROUP } from "@/components/opensvc/RelatedTileNav";
 import { ColumnFamilyIcon } from "@/components/opensvc/ColumnFamily";
-import { BookIcon, GearIcon } from "@/components/ui/icons";
+import { BookIcon, GearIcon, PowerIcon, TopologyIcon } from "@/components/ui/icons";
+import { TopologyView } from "@/features/topology/TopologyView";
+import { ServiceStartup } from "@/features/startup/ServiceStartup";
 import type { RelatedTab, RelatedTabGroup } from "@/components/opensvc/related-tabs";
 import { useTranslation } from "react-i18next";
 import { alertsSummary } from "@/components/opensvc/alerts";
@@ -130,6 +132,28 @@ export const SERVICE_RELATED_TABS: RelatedTab[] = [
     render: (svcId, locale) => <ServiceActions svcId={svcId} locale={locale} />,
   },
   {
+    key: "topology",
+    hideCount: true,
+    labelKey: "topology.tab",
+    descriptionKey: "services.related.descriptions.topology",
+    icon: <TopologyIcon className="h-4 w-4 shrink-0 text-icon-service" />,
+    // No count: a drawing, which is only read when the tab opens.
+    useSummary: () => ({ count: undefined }),
+    // As the historical service tab: the service, its nodes and their other services.
+    render: (svcId) => <TopologyView start={{ svcIds: [svcId] }} />,
+  },
+  {
+    key: "startup",
+    hideCount: true,
+    labelKey: "startup.tab",
+    descriptionKey: "services.related.descriptions.startup",
+    icon: <PowerIcon className="h-4 w-4 shrink-0 text-icon-service" />,
+    // No count: a drawing, which is only read when the tab opens.
+    useSummary: () => ({ count: undefined }),
+    // As the historical service tab: its resources in the order the agent starts them.
+    render: (svcId) => <ServiceStartup svcId={svcId} />,
+  },
+  {
     key: "compliance",
     labelKey: "nodes.related.compliance",
     descriptionKey: "services.related.descriptions.compliance",
@@ -186,7 +210,7 @@ export const SERVICE_TAB_GROUPS: RelatedTabGroup[] = [
   {
     key: "workload",
     labelKey: "related.groups.workload",
-    tabs: ["instances", "resources", "actions"],
+    tabs: ["instances", "resources", "actions", "topology", "startup"],
   },
   {
     key: "health",

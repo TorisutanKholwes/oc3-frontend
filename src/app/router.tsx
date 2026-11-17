@@ -30,6 +30,9 @@ import { ResourcesPage } from "@/features/resources/ResourcesPage";
 import { ServiceActionsPage } from "@/features/service-actions/ServiceActionsPage";
 import { FiltersPage } from "@/features/filters/FiltersPage";
 import { ClaimMappingsPage } from "@/features/claim-mappings/ClaimMappingsPage";
+import { Om3GrantsPage } from "@/features/om3-grants/Om3GrantsPage";
+import { SysreportAccessPage } from "@/features/sysreport-access/SysreportAccessPage";
+import { OidcAuthorizePage } from "@/features/om3-grants/OidcAuthorizePage";
 import { FormConnectorsPage } from "@/features/form-connectors/FormConnectorsPage";
 import { AIResourcesPage, AISkillsPage } from "@/features/ai-content/AIContentPage";
 import { NotificationsPage } from "@/features/notifications/NotificationsPage";
@@ -54,6 +57,7 @@ import { LogsPage } from "@/features/logs/LogsPage";
 import { ModulesetsPage } from "@/features/modulesets/ModulesetsPage";
 import { CompModulesPage } from "@/features/comp-modules/CompModulesPage";
 import { NetworksPage } from "@/features/networks/NetworksPage";
+import { DeclaredNetworksPage } from "@/features/networks/DeclaredNetworksPage";
 import { NodesPage } from "@/features/nodes/NodesPage";
 import { ObsolescencePage } from "@/features/obsolescence/ObsolescencePage";
 import { ActionsPage } from "@/features/actions/ActionsPage";
@@ -61,6 +65,8 @@ import { ProfilePage } from "@/features/profile/ProfilePage";
 import { RulesetsPage } from "@/features/rulesets/RulesetsPage";
 import { ServicesPage } from "@/features/services/ServicesPage";
 import { TagsPage } from "@/features/tags/TagsPage";
+import { parseTopologySearch } from "@/features/topology/layers";
+import { TopologyPage } from "@/features/topology/TopologyPage";
 import { UsersPage } from "@/features/users/UsersPage";
 import { parseListSearch } from "@/lib/list-search";
 
@@ -106,6 +112,15 @@ const networksRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/networks",
   component: NetworksPage,
+  validateSearch: parseListSearch,
+});
+
+// The declared networks, their segments and addresses; the node addresses keep
+// /networks.
+const declaredNetworksRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/networks/declared",
+  component: DeclaredNetworksPage,
   validateSearch: parseListSearch,
 });
 
@@ -338,6 +353,34 @@ const claimMappingsRoute = createRoute({
   validateSearch: parseListSearch,
 });
 
+// The om3 grants of the teams, which the collector gives as the OpenID Connect
+// provider of the om3 clusters: Manager only, as the api.
+const om3GrantsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/om3-grants",
+  component: Om3GrantsPage,
+  validateSearch: parseListSearch,
+});
+
+// Who sees the sensitive sysreport files: the secure patterns and the
+// authorizations of the teams. Manager only, as the api's writes.
+const sysreportAccessRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/sysreport-access",
+  component: SysreportAccessPage,
+});
+
+// Where an om3 cluster sends its users to sign in with the collector: the request
+// its provider endpoint saved, for the user signed in to approve.
+const oidcAuthorizeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/oidc/authorize",
+  component: OidcAuthorizePage,
+  validateSearch: (raw: Record<string, unknown>): { request?: string } => ({
+    request: typeof raw.request === "string" && raw.request !== "" ? raw.request : undefined,
+  }),
+});
+
 const fieldConstraintsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/field-constraints",
@@ -492,6 +535,16 @@ const actionsRoute = createRoute({
   validateSearch: parseListSearch,
 });
 
+// The topology of nodes, services and applications, as the historical collector
+// drew it: opened from the actions menus of the nodes and services lists, with
+// what it starts from and its layers in the URL.
+const topologyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/topology",
+  component: TopologyPage,
+  validateSearch: parseTopologySearch,
+});
+
 // Profile of the signed-in user: no list state, hence no search.
 const profileRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -516,6 +569,7 @@ const routeTree = rootRoute.addChildren([
   resourcesRoute,
   serviceActionsRoute,
   networksRoute,
+  declaredNetworksRoute,
   disksRoute,
   quotasRoute,
   savesRoute,
@@ -539,6 +593,9 @@ const routeTree = rootRoute.addChildren([
   logsRoute,
   filtersRoute,
   claimMappingsRoute,
+  om3GrantsRoute,
+  sysreportAccessRoute,
+  oidcAuthorizeRoute,
   formConnectorsRoute,
   aiResourcesRoute,
   aiSkillsRoute,
@@ -560,6 +617,7 @@ const routeTree = rootRoute.addChildren([
   complianceAttachmentsRoute,
   designerRoute,
   actionsRoute,
+  topologyRoute,
   orchestrationsRoute,
   orchestrationRoute,
   orchestrationRunsRoute,

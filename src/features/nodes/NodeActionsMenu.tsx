@@ -57,10 +57,13 @@ export function NodeActionsMenu({
   nodes,
   onDeleted,
   onCompare,
+  onTopology,
 }: {
   nodes: ActionTarget[];
   /** Opens the comparison of the selection, see ActionsMenu. */
   onCompare?: () => void;
+  /** Opens the topology of the selection, see ActionsMenu. */
+  onTopology?: () => void;
   onDeleted?: (ids: string[]) => void;
 }) {
   const { t } = useTranslation();
@@ -100,6 +103,7 @@ export function NodeActionsMenu({
       actions={ACTIONS}
       dataActions={dataActions}
       onCompare={onCompare}
+      onTopology={onTopology}
       prefix="nodes.actions"
       // `node_id` alone targets the node, as in the historical collector.
       enqueue={(target, action) => ({ node_id: target.id, action })}

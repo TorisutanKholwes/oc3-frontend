@@ -3,9 +3,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import type { components } from "@/lib/api/schema";
 import { api } from "@/lib/api/client";
-import { DetailPanel, type DetailGroup } from "@/components/opensvc/DetailPanel";
+import { DetailContent, type DetailGroup } from "@/components/opensvc/DetailPanel";
+import { RelatedTabsPanel } from "@/components/opensvc/RelatedTabsPanel";
+import type { RelatedTab } from "@/components/opensvc/related-tabs";
 import { ConfirmButton } from "@/components/ui/ConfirmButton";
-import { TrashIcon } from "@/components/ui/icons";
+import { TopologyIcon, TrashIcon } from "@/components/ui/icons";
+import { TopologyView } from "@/features/topology/TopologyView";
 import { problemText } from "@/lib/api/problem";
 import {
   useFieldConstraints,
@@ -57,19 +60,31 @@ function groups(editable: boolean): DetailGroup<AppRow>[] {
  *
  * `appId` is a record id or a code; after a rename, the panel follows the new
  * code, and tells `onRenamed`, for the view holding the selection.
+ *
+ * Its Topology tab draws its nodes and services, as the historical collector's
+ * application view. The open tab is held by the view, in the URL (`tab`), as for
+ * the other panels.
  */
 export function AppDetailPanel({
   appId: requestedId,
   label,
   onClose,
   onRenamed,
+  tab,
+  onTabChange,
 }: {
   appId: string | undefined;
   label: string;
   onClose: () => void;
   onRenamed?: (code: string) => void;
+  tab?: string;
+  onTabChange?: (tab: string | undefined) => void;
 }) {
   const { t } = useTranslation();
+  // Without a view holding it, the tab lives here.
+  const [localTab, setLocalTab] = useState<string | undefined>(undefined);
+  const activeTab = onTabChange === undefined ? localTab : tab;
+  const changeTab = onTabChange ?? setLocalTab;
   const queryClient = useQueryClient();
   // Tied to the code it renames: opening another app forgets it.
   const [renamed, setRenamed] = useState<{ from: string; to: string } | null>(null);
@@ -160,85 +175,111 @@ export function AppDetailPanel({
     },
   });
 
+  // The topology starts from the record id, which the API takes, known once read.
+  const recordId = app?.id;
+  const tabs: RelatedTab[] = [
+    {
+      key: "topology",
+      hideCount: true,
+      labelKey: "topology.tab",
+      icon: <TopologyIcon className="h-4 w-4 shrink-0 text-icon-app" />,
+      useSummary: () => ({ count: undefined }),
+      render: () =>
+        recordId === undefined ? (
+          <p className="text-ink-muted">{t("topology.loading")}</p>
+        ) : (
+          <TopologyView start={{ appIds: [recordId] }} />
+        ),
+    },
+  ];
+
   return (
-    <DetailPanel
-      kind="app"
-      recordId={appId}
+    <RelatedTabsPanel
       open={appId !== undefined}
       title={app?.app ?? (label === "" ? t("apps.detail.title") : label)}
+      kind="app"
       onClose={onClose}
-      groups={groups(editable)}
-      row={app}
-      onSave={editable ? (changes) => save.mutateAsync(changes).then(() => undefined) : undefined}
-      editHint={editable ? t("apps.detail.editHint") : ""}
-      options={{ teams: (candidates.data ?? []).map((g) => g.role) }}
-      labelPrefix="apps.fields"
-      groupPrefix="apps.detail.groups"
-      valueLists={valueLists(constraints.data?.data)}
-      isPending={isPending}
-      errorMessage={isError ? error.message : null}
-      actions={
-        <>
-          <div className="mb-4 space-y-3">
-            <ChangeOutcomeLine outcome={outcome} onDismiss={dismiss} />
-            {teams.isError && (
-              <p role="alert" className="text-state-down">
-                ■ {teams.error.message}
+      objectId={appId}
+      tabs={tabs}
+      tab={activeTab}
+      onTabChange={changeTab}
+      propertiesFamily="app"
+      label={t("apps.related.label")}
+    >
+      <DetailContent
+        groups={groups(editable)}
+        row={app}
+        onSave={editable ? (changes) => save.mutateAsync(changes).then(() => undefined) : undefined}
+        editHint={editable ? t("apps.detail.editHint") : ""}
+        options={{ teams: (candidates.data ?? []).map((g) => g.role) }}
+        labelPrefix="apps.fields"
+        groupPrefix="apps.detail.groups"
+        valueLists={valueLists(constraints.data?.data)}
+        isPending={appId !== undefined && isPending}
+        errorMessage={isError ? error.message : null}
+        actions={
+          <>
+            <div className="mb-4 space-y-3">
+              <ChangeOutcomeLine outcome={outcome} onDismiss={dismiss} />
+              {teams.isError && (
+                <p role="alert" className="text-state-down">
+                  ■ {teams.error.message}
+                </p>
+              )}
+              <TeamsPart
+                teams={{
+                  responsibles: (teams.data?.responsibles ?? []).map((g) => g.role),
+                  publications: (teams.data?.publications ?? []).map((g) => g.role),
+                }}
+                groups={
+                  candidates.data ?? [
+                    ...(teams.data?.responsibles ?? []),
+                    ...(teams.data?.publications ?? []),
+                  ]
+                }
+                editable={editable}
+                busy={busy}
+                onAdd={(role, group, list) => {
+                  const params = { path: { app_id: appId ?? "", group_id: String(group.id) } };
+                  void change(t("compEditor.teamAdded", { team: group.role, list }), () =>
+                    role === "responsibles"
+                      ? api.POST("/apps/{app_id}/responsibles/{group_id}", { params })
+                      : api.POST("/apps/{app_id}/publications/{group_id}", { params }),
+                  );
+                }}
+                onRemove={(role, team, groupId, list) => {
+                  const params = { path: { app_id: appId ?? "", group_id: groupId } };
+                  void change(t("compEditor.teamRemoved", { team, list }), () =>
+                    role === "responsibles"
+                      ? api.DELETE("/apps/{app_id}/responsibles/{group_id}", { params })
+                      : api.DELETE("/apps/{app_id}/publications/{group_id}", { params }),
+                  );
+                }}
+              />
+              {editable && <p className="text-ink-muted">{t("apps.detail.teamsHint")}</p>}
+            </div>
+            {editable && (
+              <ConfirmButton
+                icon={<TrashIcon />}
+                label={t("detail.delete")}
+                question={t("apps.delete.question", { app: app?.app ?? "" })}
+                confirmLabel={t("detail.deleteConfirm")}
+                cancelLabel={t("detail.cancel")}
+                pendingLabel={t("detail.deleting")}
+                pending={remove.isPending}
+                onConfirm={() => {
+                  remove.mutate();
+                }}
+              />
+            )}
+            {remove.isError && (
+              <p role="alert" className="mt-2 text-state-down">
+                ■ {remove.error.message}
               </p>
             )}
-            <TeamsPart
-              teams={{
-                responsibles: (teams.data?.responsibles ?? []).map((g) => g.role),
-                publications: (teams.data?.publications ?? []).map((g) => g.role),
-              }}
-              groups={
-                candidates.data ?? [
-                  ...(teams.data?.responsibles ?? []),
-                  ...(teams.data?.publications ?? []),
-                ]
-              }
-              editable={editable}
-              busy={busy}
-              onAdd={(role, group, list) => {
-                const params = { path: { app_id: appId ?? "", group_id: String(group.id) } };
-                void change(t("compEditor.teamAdded", { team: group.role, list }), () =>
-                  role === "responsibles"
-                    ? api.POST("/apps/{app_id}/responsibles/{group_id}", { params })
-                    : api.POST("/apps/{app_id}/publications/{group_id}", { params }),
-                );
-              }}
-              onRemove={(role, team, groupId, list) => {
-                const params = { path: { app_id: appId ?? "", group_id: groupId } };
-                void change(t("compEditor.teamRemoved", { team, list }), () =>
-                  role === "responsibles"
-                    ? api.DELETE("/apps/{app_id}/responsibles/{group_id}", { params })
-                    : api.DELETE("/apps/{app_id}/publications/{group_id}", { params }),
-                );
-              }}
-            />
-            {editable && <p className="text-ink-muted">{t("apps.detail.teamsHint")}</p>}
-          </div>
-          {editable && (
-            <ConfirmButton
-              icon={<TrashIcon />}
-              label={t("detail.delete")}
-              question={t("apps.delete.question", { app: app?.app ?? "" })}
-              confirmLabel={t("detail.deleteConfirm")}
-              cancelLabel={t("detail.cancel")}
-              pendingLabel={t("detail.deleting")}
-              pending={remove.isPending}
-              onConfirm={() => {
-                remove.mutate();
-              }}
-            />
-          )}
-          {remove.isError && (
-            <p role="alert" className="mt-2 text-state-down">
-              ■ {remove.error.message}
-            </p>
-          )}
-        </>
-      }
-    />
+          </>
+        }
+      />
+    </RelatedTabsPanel>
   );
 }

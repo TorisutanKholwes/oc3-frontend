@@ -44,10 +44,13 @@ export function ServiceActionsMenu({
   services,
   onDeleted,
   onCompare,
+  onTopology,
 }: {
   services: ActionTarget[];
   /** Opens the comparison of the selection, see ActionsMenu. */
   onCompare?: () => void;
+  /** Opens the topology of the selection, see ActionsMenu. */
+  onTopology?: () => void;
   onDeleted?: (ids: string[]) => void;
 }) {
   const { t } = useTranslation();
@@ -88,6 +91,7 @@ export function ServiceActionsMenu({
       actions={SERVICE_ACTIONS}
       dataActions={dataActions}
       onCompare={onCompare}
+      onTopology={onTopology}
       prefix="services.actions"
       // `svc_id` alone targets the whole service, as in the historical collector.
       enqueue={(target, action) => ({ svc_id: target.id, action })}
