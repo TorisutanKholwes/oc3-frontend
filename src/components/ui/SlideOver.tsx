@@ -311,8 +311,11 @@ export function SlideOver({
           ? undefined
           : ({ "--panel-width": `${String(width)}px` } as CSSProperties)
       }
-      // As wide as its content, within the window.
-      className={`fixed inset-y-0 z-10 flex max-w-full border-line bg-surface-raised shadow-lg transition-transform duration-200 ease-out ${
+      // As wide as its content, within the window; below the top bar on screen
+      // (`--app-top`, kept by the shell), the whole height without one. It takes
+      // the focus on opening, for the keyboard to go on in it, without the ring:
+      // the panel showing is what tells it, the controls in it keep theirs.
+      className={`fixed top-[var(--app-top,0px)] bottom-0 z-10 flex max-w-full border-line bg-surface-raised shadow-lg transition-transform duration-200 ease-out outline-none ${
         left ? "left-0 border-r" : "right-0 border-l"
       } ${open ? "translate-x-0" : left ? "-translate-x-full" : "translate-x-full"}`}
     >

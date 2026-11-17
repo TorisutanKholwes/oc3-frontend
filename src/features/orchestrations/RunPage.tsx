@@ -410,7 +410,7 @@ function TargetTable({
                   onOpen(target);
                 }
               }}
-              className={`cursor-pointer border-t border-line/60 align-top hover:bg-surface-sunken/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent ${
+              className={`cursor-pointer border-t border-line/60 align-top hover:bg-surface-sunken/60 focus-visible:bg-surface-sunken focus-visible:outline-none ${
                 failed ? "bg-state-down-soft/40" : ""
               }`}
             >

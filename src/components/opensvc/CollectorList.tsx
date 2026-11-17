@@ -1325,7 +1325,10 @@ export function CollectorList<T>({
                         openRow();
                       }}
                       aria-current={selected ? "true" : undefined}
-                      className={`h-(--row-height) cursor-pointer border-b border-line last:border-b-0 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--focus-ring) ${
+                      // Focused, as when a panel it opened closes and gives it the
+                      // focus back, the row is marked by its background alone rather
+                      // than framed.
+                      className={`h-(--row-height) cursor-pointer border-b border-line last:border-b-0 hover:bg-surface-sunken focus-visible:bg-surface-sunken focus-visible:outline-none ${
                         selected ? "bg-accent-soft" : ""
                       }`}
                     >
