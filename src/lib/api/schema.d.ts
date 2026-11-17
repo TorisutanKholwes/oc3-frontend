@@ -8355,6 +8355,30 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/services/{svc_id}/startup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description The startup graph of a service on one of its nodes, as the historical
+     *     collector's startup tab drew it: its resources in the order the agent
+     *     starts them, read from the service configuration, with the state the
+     *     node last reported. A service whose configuration was never received
+     *     has its nodes and no vertices. The services of the applications the
+     *     caller's groups are responsible for only, unless a manager.
+     */
+    get: operations["GetServiceStartup"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/services/{svc_id}/resinfo": {
     parameters: {
       query?: never;
@@ -13391,6 +13415,62 @@ export interface components {
     Topology: {
       edges: components["schemas"]["TopologyEdge"][];
       vertices: components["schemas"]["TopologyVertex"][];
+    };
+    /** @description The startup graph of a service on a node. */
+    ServiceStartup: {
+      svc_id: string;
+      svcname: string;
+      /** @description The node drawn, absent for a service with no instance. */
+      node_id?: string;
+      nodename?: string;
+      /** @description The nodes of the service, by name. */
+      nodes: components["schemas"]["ServiceStartupNode"][];
+      vertices: components["schemas"]["ServiceStartupVertex"][];
+      edges: components["schemas"]["ServiceStartupEdge"][];
+    };
+    ServiceStartupNode: {
+      node_id: string;
+      nodename: string;
+    };
+    ServiceStartupVertex: {
+      id: string;
+      /** @enum {string} */
+      kind: "service" | "node" | "subset" | "resource" | "trigger" | "encap";
+      label: string;
+      /** @description The resource; that of a trigger; the container of an encap node. */
+      rid?: string;
+      /** @description Driver group of a resource, ip, volume, disk, fs, share, container, app. */
+      family?: string;
+      /** @description Driver of a resource, docker, netns, flag... */
+      type?: string;
+      /** @description Description of a resource the agent reports; command of a trigger. */
+      desc?: string;
+      /** @description State of a resource the agent last reported, absent when never reported. */
+      status?: string;
+      /** @description Hook of a trigger, blocking_pre_start, pre_start, blocking_post_start, post_start. */
+      trigger?: string;
+      /** @description A subset whose resources start in parallel. */
+      parallel?: boolean;
+      disabled?: boolean;
+      optional?: boolean;
+      monitor?: boolean;
+      standby?: boolean;
+      encap?: boolean;
+      /** @description The encap node a resource runs in. */
+      node?: string;
+    };
+    ServiceStartupEdge: {
+      from: string;
+      to: string;
+      /**
+       * @description sequence, from a step to a step that follows it; requires, from a
+       *     resource to one whose start waits for it (start_requires), or from
+       *     a container to the encap node it holds.
+       * @enum {string}
+       */
+      kind: "sequence" | "requires";
+      /** @description The states a requirement waits for. */
+      label?: string;
     };
     TopologyEdge: {
       from: string;
@@ -38043,6 +38123,37 @@ export interface operations {
           "application/json": components["schemas"]["ListResponse"];
         };
       };
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetServiceStartup: {
+    parameters: {
+      query?: {
+        /** @description The node to draw the startup on, the first of the service by name if absent */
+        node_id?: string;
+        /** @description Draw the disabled resources too, which the agent skips */
+        show_disabled?: boolean;
+      };
+      header?: never;
+      path: {
+        /** @description Service identifier (svc_id UUID or svcname) */
+        svc_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceStartup"];
+        };
+      };
+      400: components["responses"]["400"];
       404: components["responses"]["404"];
       500: components["responses"]["500"];
     };

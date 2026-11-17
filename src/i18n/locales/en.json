@@ -1030,7 +1030,8 @@
         "instances": "Instances on each node",
         "alerts": "Open alerts",
         "resinfo": "Keys the resources declare",
-        "topology": "Its nodes, their services, and where they are"
+        "topology": "Its nodes, their services, and where they are",
+        "startup": "The order in which the agent starts its resources, on each node"
       },
       "instances": "Status",
       "alerts": "Alerts",
@@ -6055,6 +6056,34 @@
       "services_other": "{{count}} services",
       "apps_one": "{{count}} application",
       "apps_other": "{{count}} applications"
+    }
+  },
+  "startup": {
+    "tab": "Startup",
+    "node": "Node",
+    "showDisabled": "Show the disabled resources",
+    "loading": "Loading the startup…",
+    "error": "Cannot draw the startup: {{message}}",
+    "noNode": "The service has no instance: no node to draw its startup on.",
+    "noConfig": "The configuration of the service was never received: nothing to draw.",
+    "summary_one": "Startup of the service on {{nodename}}: {{count}} resource",
+    "summary_other": "Startup of the service on {{nodename}}: {{count}} resources",
+    "hint": "From the top down, the order in which the agent starts the resources, read from the configuration, each with the state the node last reported. Dashed: what a start waits for (start_requires). Hover a step for its details.",
+    "requires": "{{from}} waits for {{to}} {{states}}",
+    "serial": "in series",
+    "unreported": "not reported",
+    "kinds": {
+      "service": "service",
+      "node": "node",
+      "encap": "encap node"
+    },
+    "flags": {
+      "parallel": "parallel",
+      "disabled": "disabled",
+      "optional": "optional",
+      "monitor": "monitored",
+      "standby": "standby",
+      "encap": "encap"
     }
   }
 }

@@ -1030,7 +1030,8 @@
         "instances": "Instances sur chaque nœud",
         "alerts": "Alertes ouvertes",
         "resinfo": "Clés déclarées par les ressources",
-        "topology": "Ses nœuds, leurs services, et où ils se trouvent"
+        "topology": "Ses nœuds, leurs services, et où ils se trouvent",
+        "startup": "L'ordre dans lequel l'agent démarre ses ressources, sur chaque nœud"
       },
       "instances": "Statut",
       "alerts": "Alertes",
@@ -6055,6 +6056,34 @@
       "services_other": "{{count}} services",
       "apps_one": "{{count}} application",
       "apps_other": "{{count}} applications"
+    }
+  },
+  "startup": {
+    "tab": "Démarrage",
+    "node": "Nœud",
+    "showDisabled": "Afficher les ressources désactivées",
+    "loading": "Chargement du démarrage…",
+    "error": "Impossible de dessiner le démarrage : {{message}}",
+    "noNode": "Le service n'a pas d'instance : aucun nœud sur lequel dessiner son démarrage.",
+    "noConfig": "La configuration du service n'a jamais été reçue : rien à dessiner.",
+    "summary_one": "Démarrage du service sur {{nodename}} : {{count}} ressource",
+    "summary_other": "Démarrage du service sur {{nodename}} : {{count}} ressources",
+    "hint": "De haut en bas, l'ordre dans lequel l'agent démarre les ressources, lu dans la configuration, chacune avec l'état que le nœud a remonté en dernier. En pointillés : ce qu'un démarrage attend (start_requires). Survolez une étape pour son détail.",
+    "requires": "{{from}} attend {{to}} {{states}}",
+    "serial": "en série",
+    "unreported": "non remonté",
+    "kinds": {
+      "service": "service",
+      "node": "nœud",
+      "encap": "nœud encap"
+    },
+    "flags": {
+      "parallel": "parallèle",
+      "disabled": "désactivée",
+      "optional": "optionnelle",
+      "monitor": "surveillée",
+      "standby": "standby",
+      "encap": "encap"
     }
   }
 }
