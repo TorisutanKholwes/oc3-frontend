@@ -11,6 +11,7 @@ import {
   type PointerEvent,
   type RefObject,
 } from "react";
+import { useStickToBottom } from "./use-stick-to-bottom";
 import { useMatchRoute, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -344,11 +345,11 @@ function DockPanel({ dock, onFold }: { dock: Dock; onFold: () => void }) {
     if (document.activeElement === heading.current) composer.current?.focus();
   }, [boxOpen]);
 
-  // The latest message stays in sight.
-  useLayoutEffect(() => {
-    const element = log.current;
-    if (element !== null) element.scrollTop = element.scrollHeight;
-  }, [chat.messages]);
+  // The latest message in sight while the user reads it, not once they went up.
+  const onLogScroll = useStickToBottom(log, {
+    messages: chat.messages,
+    conversationId: chat.conversation?.id ?? null,
+  });
 
   // To the page of the assistant: a move, not an end. The dock folds, and its
   // button is there again on the other pages.
@@ -457,6 +458,7 @@ function DockPanel({ dock, onFold }: { dock: Dock; onFold: () => void }) {
 
       <div
         ref={log}
+        onScroll={onLogScroll}
         role="log"
         aria-label={t("assistant.transcript.log")}
         aria-live="polite"

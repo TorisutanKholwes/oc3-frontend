@@ -147,7 +147,8 @@ function StepRow({
 /**
  * The steps of an answer, folded in one line, its live timer while it runs: the
  * time counted on the clock of the page since the run started, the durations
- * shown from the clock of the agent. Unfolded, the steps in the order they
+ * shown from the clock of the agent. Folded, no tool shows, not even the one
+ * running, as in the webapp of om3. Unfolded, the steps in the order they
  * started, the time of the model between them, the ones that ran at once said so.
  */
 export function AnswerSteps({
@@ -188,7 +189,6 @@ export function AnswerSteps({
   const ordered = timed
     ? [...steps].sort((left, right) => (left.startedAt ?? 0) - (right.startedAt ?? 0))
     : steps;
-  const current = steps.find((step) => step.status === "running");
   const summary =
     liveSince !== null
       ? t("assistant.steps.running", { time: clock(now - liveSince) })
@@ -240,11 +240,6 @@ export function AnswerSteps({
         />
         {summary}
       </button>
-      {liveSince !== null && current !== undefined && !open && (
-        <p className="ml-4 [overflow-wrap:anywhere] text-ink-muted">
-          {stepSentence(current, t, i18n)}
-        </p>
-      )}
       <ol
         id={listId}
         hidden={!open}

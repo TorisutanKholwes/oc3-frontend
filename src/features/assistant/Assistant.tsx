@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useStickToBottom } from "./use-stick-to-bottom";
 import { useTranslation } from "react-i18next";
 import { Markdown } from "@/components/ui/Markdown";
 import { Modal } from "@/components/ui/Modal";
@@ -152,20 +153,19 @@ function AssistantView({ client, initialPrompt, onPromptTaken }: AssistantProps)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Before paint: the latest message stays in sight, and older messages put
-  // before keep the reading position without a jump.
-  useLayoutEffect(() => {
-    const log = transcript.current;
-    if (log === null) return;
-    const anchor = scrollAnchor.current;
-    log.scrollTop =
-      anchor !== null && anchor.conversationId === chat.conversation?.id
-        ? anchor.top + log.scrollHeight - anchor.height
-        : log.scrollHeight;
-    scrollAnchor.current = null;
-    // The messages only: the position is kept otherwise.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chat.messages]);
+  // The end of the transcript in sight while the user reads it, not once they
+  // went up; older messages put before keep the reading position without a jump.
+  const onTranscriptScroll = useStickToBottom(transcript, {
+    messages: chat.messages,
+    conversationId: chat.conversation?.id ?? null,
+    restore: (log) => {
+      const anchor = scrollAnchor.current;
+      scrollAnchor.current = null;
+      if (anchor === null || anchor.conversationId !== chat.conversation?.id) return false;
+      log.scrollTop = anchor.top + log.scrollHeight - anchor.height;
+      return true;
+    },
+  });
 
   useEffect(() => {
     if (chat.pending !== "history") scrollAnchor.current = null;
@@ -414,6 +414,7 @@ function AssistantView({ client, initialPrompt, onPromptTaken }: AssistantProps)
 
         <div
           ref={transcript}
+          onScroll={onTranscriptScroll}
           role="log"
           aria-label={t("assistant.transcript.log")}
           aria-live="polite"

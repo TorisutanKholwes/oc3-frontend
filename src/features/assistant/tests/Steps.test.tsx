@@ -334,8 +334,8 @@ describe("the steps of an answer", () => {
     );
     await ask("How is the estate?");
     const live = await screen.findByRole("button", { name: /^Running · 00:0\d$/ });
-    // The step running, under the folded summary.
-    expect(screen.getAllByText("List nodes")[0]).toBeVisible();
+    // Folded, the summary alone: no tool shows, not even the one running.
+    expect(screen.getByText("List nodes")).not.toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Stop" }));
     await screen.findByText(/Incomplete answer, stopped/);
     expect(live).not.toHaveTextContent(/Running/);
