@@ -141,6 +141,11 @@ export interface NavEntry {
    * whoever opens its address, its actions checking their own privilege.
    */
   privileges?: readonly string[];
+  /**
+   * True for the entries of the AI assistant: shown only when oc3 has one
+   * configured (`/assistant/status`, enabled), whoever the user.
+   */
+  assistant?: true;
 }
 
 /**
@@ -170,7 +175,7 @@ export const NAV_TOP: NavEntry[] = [
   },
   // The conversation with the AI assistant, right after the dashboard: a way into
   // the estate as a whole rather than a view of one kind of object.
-  { to: "/ai", menuId: "view-ai", labelKey: "nav.ai", icon: "ai" },
+  { to: "/ai", menuId: "view-ai", labelKey: "nav.ai", icon: "ai", assistant: true },
 ];
 
 /**
@@ -466,7 +471,8 @@ export const NAV_CATEGORIES: NavCategory[] = [
     ],
   },
   // The texts the assistant reads: AIManager, as the api; the model takes them as
-  // instructions, for every user they are published to.
+  // instructions, for every user they are published to. Without an assistant
+  // configured, nothing reads them: the section goes.
   {
     key: "assistant",
     labelKey: "nav.categories.assistant",
@@ -478,6 +484,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
         labelKey: "nav.aiResources",
         icon: "aiResource",
         privileges: ["AIManager"],
+        assistant: true,
       },
       {
         to: "/ai-skills",
@@ -485,6 +492,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
         labelKey: "nav.aiSkills",
         icon: "aiSkill",
         privileges: ["AIManager"],
+        assistant: true,
       },
     ],
   },
