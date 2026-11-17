@@ -328,7 +328,7 @@ export function SysreportAccessPage() {
     <section>
       <div className="mb-3 flex items-center gap-3">
         <h1 className="flex items-center gap-2 text-title font-semibold">
-          <ObjectIcon kind="privilege" className="h-5 w-5" />
+          <ObjectIcon kind="sysreportAccess" className="h-5 w-5" />
           {t("sysreportAccess.title")}
         </h1>
       </div>

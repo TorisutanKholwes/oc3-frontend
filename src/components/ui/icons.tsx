@@ -717,6 +717,42 @@ export function KeyIcon(props: IconProps) {
   );
 }
 
+/** An identity card: the claims of a token, mapped to teams. */
+export function IdCardIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        fillRule="evenodd"
+        d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm4.5 3.2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-3.3 8c.3-1.8 1.7-2.8 3.3-2.8s3 1 3.3 2.8ZM13.5 9h5v1.6h-5Zm0 3.4h4V14h-4Z"
+      />
+    </Svg>
+  );
+}
+
+/** A shield with a check mark: rights granted. */
+export function ShieldCheckIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        fillRule="evenodd"
+        d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5Zm-1.4 13.8 6-6-1.4-1.4-4.6 4.6-1.8-1.8-1.4 1.4Z"
+      />
+    </Svg>
+  );
+}
+
+/** A file with a keyhole: files whose reading is restricted. */
+export function FileLockIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        fillRule="evenodd"
+        d="M6.5 2H13v5.5c0 .8.7 1.5 1.5 1.5H20v11.5c0 .8-.7 1.5-1.5 1.5h-12c-.8 0-1.5-.7-1.5-1.5v-17C5 2.7 5.7 2 6.5 2Zm8 .4 5.1 5.1h-5.1V2.4ZM11 15.2A2 2 0 1 1 13 15.2L13.6 18.5H10.4Z"
+      />
+    </Svg>
+  );
+}
+
 /** Files (`file16`, fa-file). */
 export function FileIcon(props: IconProps) {
   return (

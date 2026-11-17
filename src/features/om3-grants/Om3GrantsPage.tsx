@@ -29,7 +29,7 @@ export function Om3GrantsPage() {
     <section>
       <div className="mb-3 flex items-center gap-3">
         <h1 className="flex items-center gap-2 text-title font-semibold">
-          <ObjectIcon kind="cluster" className="h-5 w-5" />
+          <ObjectIcon kind="om3Grant" className="h-5 w-5" />
           {t("om3Grants.title")}
         </h1>
         <button

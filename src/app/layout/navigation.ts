@@ -334,7 +334,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
         to: "/om3-grants",
         menuId: "adm-om3-grants",
         labelKey: "nav.om3Grants",
-        icon: "cluster",
+        icon: "om3Grant",
         privileges: ["Manager"],
       },
       // Who sees the sensitive sysreport files: Manager only, as the api's writes.
@@ -342,7 +342,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
         to: "/sysreport-access",
         menuId: "adm-sysreport",
         labelKey: "nav.sysreportAccess",
-        icon: "privilege",
+        icon: "sysreportAccess",
         privileges: ["Manager"],
       },
       // Who the alerts are sent to, by mail or to the team messaging.
