@@ -90,6 +90,7 @@
     "search": "Search the collector",
     "panel": "Open the detail panel on the record shown last, or close it",
     "menu": "Move to the left-hand menu",
+    "assistant": "Open the assistant over the page, or fold it",
     "menuMove": "In the menu: move between entries, Enter opens",
     "escape": "Close the panel, a list or this help; leave the menu",
     "help": "Show this list",
@@ -4775,8 +4776,6 @@
     "askAbout": {
       "alert": "Analyze the alert “{{type}}” on {{object}}: its likely cause and what to do about it.",
       "alert_instance": "Analyze the alert “{{type}}” on {{object}} ({{instance}}): its likely cause and what to do about it.",
-      "node": "Review the health of the node {{node}}: its alerts, its checks out of bounds and its latest failed actions.",
-      "service": "Review the service {{service}}: its availability, its alerts and its latest failed actions.",
       "failedAction": "Explain why the action {{action}} of the service {{service}} failed on {{node}} (action {{id}}), and suggest a fix."
     },
     "activity": {
@@ -4787,13 +4786,18 @@
     "promptDropped": "The question prepared was not taken: a turn runs, or an action waits for your decision. Open it again from the object once done.",
     "dock": {
       "open": "Open the assistant",
+      "onPage": "The assistant is on this page",
+      "unavailable": "The assistant is not available: see its page",
       "expand": "Open in the assistant page",
       "fold": "Fold",
-      "empty": "Ask a question about the estate, or open the assistant from an alert, a node, a service or a failed action.",
+      "foldAssistant": "Fold the assistant",
+      "move": "Move the assistant: drag it, or use the Left and Right arrows, Home to put it back",
+      "empty": "Ask a question about the estate, or about what the page shows: the record open on it, the rows ticked.",
       "waitingLabel": "Action waiting for a decision",
       "waiting": "The assistant waits for your decision on the action “{{action}}”.",
       "destructive": "A destructive action.",
-      "detail": "See the details to decide"
+      "detail": "Decide on it",
+      "decideTitle": "Decide on the action “{{action}}”"
     }
   },
   "checks": {

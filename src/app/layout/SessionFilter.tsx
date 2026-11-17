@@ -10,6 +10,7 @@ import {
   useSessionFilterset,
   useSetSessionFilterset,
 } from "@/lib/api/session-filterset";
+import { useShareSessionFilterset } from "@/features/assistant/session-filterset";
 
 /** Value of the "no filterset" choice, apart from the filterset names. */
 const NONE = "\u0000none";
@@ -31,6 +32,8 @@ export function SessionFilter() {
   const choose = useSetSessionFilterset();
   const impersonating = useImpersonation() !== null;
   const name = current.data?.fset_name ?? null;
+  // The filterset narrows the lists a question to the assistant may name.
+  useShareSessionFilterset(current.isSuccess ? name : undefined);
 
   // Changed elsewhere (another tab, the live updates): the views follow.
   const seen = useRef<string | null | undefined>(undefined);

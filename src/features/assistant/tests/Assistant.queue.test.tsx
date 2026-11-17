@@ -193,10 +193,14 @@ describe("the message queued while the assistant answers", () => {
     expect(queued()).toBeNull();
   });
 
-  test("sends the queued message again when the user asks, after a stop", async () => {
+  test("sends the queued message again when the user asks, after a stop, with its page", async () => {
+    const node = "4c1f2b9e-1a2b-4c3d-8e4f-5a6b7c8d9e01";
     await start();
+    // Queued on the panel of a node, sent again from another page.
+    window.history.pushState({}, "", `/nodes?sel=%22${node}%22`);
     type("Second");
     fireEvent.click(queueButton());
+    window.history.pushState({}, "", "/services");
     fireEvent.click(screen.getByRole("button", { name: "Stop" }));
     await screen.findByText(/Incomplete answer, stopped/);
     client.run.mockImplementationOnce(replayRun("text_and_tools"));
@@ -206,6 +210,13 @@ describe("the message queued while the assistant answers", () => {
     });
     const input = client.run.mock.calls[1]?.[1];
     expect(input !== undefined && "prompt" in input ? input.prompt : undefined).toBe("Second");
+    expect(
+      input !== undefined && "context" in input ? input.context?.slice(0, 2) : undefined,
+    ).toEqual([
+      { description: "page", value: "/nodes" },
+      { description: "selected node", value: node },
+    ]);
     expect(queued()).toBeNull();
+    window.history.pushState({}, "", "/");
   });
 });

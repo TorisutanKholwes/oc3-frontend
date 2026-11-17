@@ -45,6 +45,8 @@ import { labelMatches, normalizeSearch } from "@/lib/label-search";
 import { FlashCell, FlashScope } from "./Flash";
 import { useFitColumns, useFitColumnsEnabled } from "@/components/ui/use-fit-columns";
 import { movedColumns, useColumnDrag, type ColumnDropTarget } from "./use-column-drag";
+import { useShareCheckedRows } from "@/features/assistant/checked-rows";
+import { checkedKind } from "@/features/assistant/interface-context";
 
 export interface ListColumn<T> {
   /** Name of the apicollector prop: used for sorting and for picking the requested columns. */
@@ -347,6 +349,32 @@ export function CollectorList<T>({
   }, []);
 
   const allProps = useMemo(() => columns.map((column) => column.prop), [columns]);
+  // The rows ticked go with a question to the assistant: in the order of the
+  // rows on display, then those of the other pages. A row with no id is ticked by
+  // its position, which names nothing: their count alone goes then.
+  // The views give `rowId` inline, a new one at each render: read by a ref, so
+  // that the rows ticked are worked out again only when they or the rows change.
+  const rowIdOf = useRef(rowId);
+  rowIdOf.current = rowId;
+  const ticked = useMemo(() => {
+    const rowId = rowIdOf.current;
+    const selected = new Set(Object.keys(rowSelection).filter((id) => rowSelection[id]));
+    const ids: string[] = [];
+    let exact = true;
+    rows.forEach((row, index) => {
+      const id = rowId(row) ?? String(index);
+      if (!selected.delete(id)) return;
+      ids.push(id);
+      if (rowId(row) === undefined) exact = false;
+    });
+    const all = [...ids, ...selected];
+    // Every row of the list: selected on all its pages, or all of a list whose
+    // total the page knows.
+    const everything =
+      all.length > 0 && (allMatching || (total !== undefined && all.length === total));
+    return { ids: all, exact, everything };
+  }, [rowSelection, rows, allMatching, total]);
+  useShareCheckedRows(checkedKind(pathname), ticked.ids, ticked.exact, ticked.everything);
   // At least one page, even for an empty list.
   const pageCount = total === undefined ? undefined : Math.max(1, Math.ceil(total / search.limit));
   const shown = visibleProps(search.cols, defaultCols, allProps);

@@ -1,3 +1,4 @@
+import { defaultParseSearch } from "@tanstack/react-router";
 import {
   useCallback,
   useEffect,
@@ -15,6 +16,24 @@ import {
   type DockState,
 } from "./assistant-chat";
 import { useAssistantChat } from "./use-assistant-chat";
+import { checkedRows } from "./checked-rows";
+import { sessionFilterset } from "./session-filterset";
+import { interfaceContext } from "./interface-context";
+
+/**
+ * What the page under the dock shows, read when a prompt is sent or queued, with
+ * the rows ticked there and the clock of the user: the clock only on the page of
+ * the assistant, nothing being under the conversation there. From the address of
+ * the window, which the router keeps, with no base path, parsed as the router
+ * parses it.
+ */
+const pageContext = () =>
+  interfaceContext(window.location.pathname, defaultParseSearch(window.location.search), {
+    now: new Date(),
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    checked: checkedRows(),
+    sessionFilterset: sessionFilterset(),
+  });
 
 /**
  * Holds the chat of the assistant for the whole application, rather than for its
@@ -64,7 +83,7 @@ export function AssistantChatProvider({
     setPromptDropped(false);
     setDock("folded");
   }
-  const chat = useAssistantChat(client, enabled, identity);
+  const chat = useAssistantChat(client, enabled, identity, pageContext);
 
   const attach = useCallback(() => {
     viewers.current++;
@@ -146,7 +165,16 @@ export function AssistantChatProvider({
         ask(text);
         setDock("open");
       },
+      // Opened by its button or its key: the focus goes back, once it folds, to
+      // what had it, such as a row of a list; not to the button, nor to the page.
       open: () => {
+        const active = document.activeElement;
+        origin.current =
+          active instanceof HTMLElement &&
+          active !== document.body &&
+          active.closest("[data-assistant-dock-button]") === null
+            ? active
+            : null;
         setDock("open");
       },
       fold: () => {
@@ -161,6 +189,7 @@ export function AssistantChatProvider({
     <AssistantChatContext.Provider
       value={{
         chat,
+        client,
         attach,
         draft,
         setDraft,

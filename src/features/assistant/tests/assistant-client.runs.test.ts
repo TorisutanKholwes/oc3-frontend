@@ -405,6 +405,27 @@ describe("the refusals of a run", () => {
     });
   });
 
+  it("sends the context of the page with a prompt, bounded, and none with a resume", async () => {
+    fetchMock.mockResolvedValue(goldenResponse("text_and_tools"));
+    await client.run(GOLDEN_THREAD, {
+      prompt: "Why is it down?",
+      promptId: "u-9",
+      context: [
+        { description: "page", value: "/nodes" },
+        { description: "selected node", value: "a\nb" },
+        { description: "selected node", value: "4c1f2b9e-node" },
+      ],
+    });
+    expect((await sent()).context).toEqual([
+      { description: "page", value: "/nodes" },
+      { description: "selected node", value: "4c1f2b9e-node" },
+    ]);
+    fetchMock.mockResolvedValue(goldenResponse("resume_rejected"));
+    await client.run(GOLDEN_THREAD, { resume: { interruptId: "confirmation-1", approved: false } });
+    const resumed = fetchMock.mock.calls[1]?.[0] as Request;
+    expect(((await resumed.clone().json()) as Record<string, unknown>).context).toEqual([]);
+  });
+
   it.each([
     [prompt("", "u-1"), "invalid_prompt"],
     [prompt(" ", "u-1"), "invalid_prompt"],

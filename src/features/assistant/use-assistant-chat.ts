@@ -18,6 +18,7 @@ import {
   type StoredMessage,
   type ToolResult,
 } from "./assistant-client";
+import { withClockOf, type InterfaceEntry } from "./interface-context";
 
 export type MessageStatus =
   "running" | "completed" | "awaiting_confirmation" | "stopped" | "failed";
@@ -80,6 +81,8 @@ export type Notice = "" | "stopped" | "stopping" | "partial";
 export interface Queued {
   conversationId: string | null;
   text: string;
+  /** The context of the page it was asked from, which it goes with. */
+  context: readonly InterfaceEntry[];
 }
 
 interface ChatState {
@@ -501,8 +504,16 @@ type Update = (change: (previous: ChatState) => ChatState) => void;
  * decision, is queued: one at most, in memory only, sent once a run of its
  * conversation ends normally, never after a stop, a failure, or on a
  * confirmation.
+ *
+ * A prompt goes with the context of the interface `interfaceContext` reads (the
+ * page under the dock), when it is sent, or when it was queued.
  */
-export function useAssistantChat(client: AssistantClient, enabled = true, identity = "") {
+export function useAssistantChat(
+  client: AssistantClient,
+  enabled = true,
+  identity = "",
+  interfaceContext: () => readonly InterfaceEntry[] = () => [],
+) {
   // The chat starts as loading, as it reads its conversations once mounted and
   // enabled: nothing shows it ready, empty, before they are read.
   const [state, setState] = useState(startingState);
@@ -895,9 +906,14 @@ export function useAssistantChat(client: AssistantClient, enabled = true, identi
     });
   };
 
-  const send = (prompt: string) => {
+  // `queuedContext`, the context of a message queued: its page, the clock of now.
+  const send = (prompt: string, queuedContext?: readonly InterfaceEntry[]) => {
     if (!state.historyReady || state.confirmation !== null || prompt.trim() === "")
       return undefined;
+    const context =
+      queuedContext === undefined
+        ? interfaceContext()
+        : withClockOf(queuedContext, interfaceContext());
     const current = state.conversation;
     const held = current !== null ? heldMessages(state.messages) : [];
     let ended: string | null = null;
@@ -928,7 +944,7 @@ export function useAssistantChat(client: AssistantClient, enabled = true, identi
       if (signal.aborted) return undefined;
       const result = await client.run(
         conversation.id,
-        { prompt, promptId, held },
+        { prompt, promptId, held, context },
         { signal, onEvent: runEvents(answerId, update) },
       );
       finish(result, conversation.id, answerId, update);
@@ -961,13 +977,21 @@ export function useAssistantChat(client: AssistantClient, enabled = true, identi
   const queue = (text: string) => {
     if (text.trim() === "" || new TextEncoder().encode(text).length > MAX_PROMPT_BYTES)
       return false;
-    setQueued({ conversationId: state.conversation?.id ?? null, text });
+    // The page it is asked from goes with it, whatever page is shown once it goes.
+    setQueued({
+      conversationId: state.conversation?.id ?? null,
+      text,
+      context: interfaceContext(),
+    });
     return true;
   };
   const unqueue = () => {
     setQueued(null);
   };
-  /** Takes the queued text back, such as into the message box: it leaves the queue. */
+  /**
+   * Takes the queued text back, such as into the message box: it leaves the queue,
+   * and its context with it. Sent from the box, it goes with the page shown then.
+   */
   const takeQueued = () => {
     const text = queuedRef.current?.text ?? null;
     setQueued(null);
@@ -987,7 +1011,7 @@ export function useAssistantChat(client: AssistantClient, enabled = true, identi
       return;
     if (item.conversationId !== null && item.conversationId !== conversationId) return;
     setQueued(null);
-    void send(item.text);
+    void send(item.text, item.context);
     // The release and the end of the operation only: send reads the state of
     // this render, which is up to date then.
     // eslint-disable-next-line react-hooks/exhaustive-deps
