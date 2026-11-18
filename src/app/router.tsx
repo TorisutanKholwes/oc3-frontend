@@ -36,6 +36,7 @@ import { SchedulerTasksPage } from "@/features/scheduler/SchedulerTasksPage";
 import { OidcAuthorizePage } from "@/features/om3-grants/OidcAuthorizePage";
 import { FormConnectorsPage } from "@/features/form-connectors/FormConnectorsPage";
 import { AIResourcesPage, AISkillsPage } from "@/features/ai-content/AIContentPage";
+import { ProvisioningPage } from "@/features/provisioning/ProvisioningPage";
 import { NotificationsPage } from "@/features/notifications/NotificationsPage";
 import { FieldConstraintsPage } from "@/features/field-constraints/FieldConstraintsPage";
 import { FiltersetsPage } from "@/features/filtersets/FiltersetsPage";
@@ -339,6 +340,14 @@ const formConnectorsRoute = createRoute({
   validateSearch: parseListSearch,
 });
 
+// The clusters and nodes the collector provisions: NodeManager, as the api.
+const provisioningRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/provisioning",
+  component: ProvisioningPage,
+  validateSearch: parseListSearch,
+});
+
 // The channels and subscriptions of the alert notifications: AlertsManager, as the api.
 const notificationsRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -608,6 +617,7 @@ const routeTree = rootRoute.addChildren([
   formConnectorsRoute,
   aiResourcesRoute,
   aiSkillsRoute,
+  provisioningRoute,
   notificationsRoute,
   fieldConstraintsRoute,
   filtersetsRoute,

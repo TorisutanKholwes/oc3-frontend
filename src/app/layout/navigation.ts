@@ -17,6 +17,7 @@ export type MenuId =
   | "orch-runs"
   | "view-nodes"
   | "view-clusters"
+  | "adm-provisioning"
   | "view-services"
   | "view-service-instances"
   | "view-resources"
@@ -73,6 +74,7 @@ export interface NavEntry {
     | "/"
     | "/nodes"
     | "/clusters"
+    | "/provisioning"
     | "/hardware"
     | "/services"
     | "/instances"
@@ -192,6 +194,14 @@ export const NAV_CATEGORIES: NavCategory[] = [
     entries: [
       { to: "/nodes", menuId: "view-nodes", labelKey: "nav.nodes", icon: "node" },
       { to: "/clusters", menuId: "view-clusters", labelKey: "nav.clusters", icon: "cluster" },
+      // NodeManager, as the api: it declares the clusters and nodes to provision.
+      {
+        to: "/provisioning",
+        menuId: "adm-provisioning",
+        labelKey: "nav.provisioning",
+        icon: "cluster",
+        privileges: ["NodeManager"],
+      },
       { to: "/services", menuId: "view-services", labelKey: "nav.services", icon: "service" },
       {
         to: "/instances",

@@ -2000,7 +2000,16 @@ export interface paths {
      */
     get: operations["GetClusters"];
     put?: never;
-    post?: never;
+    /**
+     * @description Declare a cluster the collector provisions: its name, the app of its
+     *     nodes and its heartbeats. Without cluster_id a new cluster is declared,
+     *     its id generated, its first bootstrapped node creating it; with the id
+     *     of a cluster reporting already, its nodes are the seed and every node
+     *     bootstrapped joins it. Declare its nodes with POST /nodes (cluster_id),
+     *     then issue their tokens (POST /nodes/{node_id}/bootstrap_token).
+     *     Manager or NodeManager.
+     */
+    post: operations["PostClusters"];
     delete?: never;
     options?: never;
     head?: never;
@@ -9433,6 +9442,226 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/auth/node/bootstrap": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description A node being provisioned trades the bootstrap token issued for it
+     *     (POST /nodes/{node_id}/bootstrap_token) for its collector credentials
+     *     and the configuration of its declared cluster. The token is the
+     *     credential: it is used once, for the nodename it was issued for.
+     *
+     *     The first node of a cluster without seed is elected seed: it creates the
+     *     cluster. The others join it, enrolled by a member (POST
+     *     /clusters/{cluster_id}/enrollments). The uuid returned replaces any
+     *     previous registration of the node.
+     */
+    post: operations["PostAuthNodeBootstrap"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/cluster_declarations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description The declared clusters, by name, with their nodes declared and reporting
+     *     and their pending enrollments. Manager or NodeManager.
+     */
+    get: operations["GetClusterDeclarations"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/clusters/{cluster_id}/declaration": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description The declaration of a cluster: what the collector provisions its nodes
+     *     with (name, app, heartbeats) and the node elected to create it, the
+     *     seed. Manager or NodeManager.
+     */
+    get: operations["GetClusterDeclaration"];
+    /**
+     * @description Change the app and the heartbeats of a declared cluster. The nodes
+     *     already bootstrapped keep the configuration they were given.
+     *     Manager or NodeManager.
+     */
+    put: operations["PutClusterDeclaration"];
+    post?: never;
+    /**
+     * @description Delete the declaration of a cluster, its unused bootstrap tokens and
+     *     its enrollments. The cluster, its nodes and their registrations stay.
+     *     Manager or NodeManager.
+     */
+    delete: operations["DeleteClusterDeclaration"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/clusters/{cluster_id}/declaration/nodes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description The nodes of a declared cluster, those the collector has with its
+     *     cluster_id or bootstrapped into it, with their last bootstrap token and
+     *     whether they report. Manager or NodeManager.
+     */
+    get: operations["GetClusterDeclarationNodes"];
+    put?: never;
+    /**
+     * @description Declare a node of a declared cluster: the collector creates it with the
+     *     cluster_id, the app given or the one of the declaration, the team of the
+     *     caller. A node of that name in the cluster already is returned as is;
+     *     one in another cluster is refused. Manager or NodeManager.
+     */
+    post: operations["PostClusterDeclarationNode"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/clusters/{cluster_id}/enrollments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description The last 100 enrollments of nodes into a declared cluster, newest first.
+     *     A user who sees the cluster (see GET /clusters), or a node of it.
+     */
+    get: operations["GetClusterEnrollments"];
+    put?: never;
+    /**
+     * @description A bootstrapped node asks to join its declared cluster. It hands a token
+     *     of the join role its daemon created: a member of the cluster claims the
+     *     enrollment and enrolls the node with it (om3 POST /api/cluster/enroll).
+     *     The token is kept in the cache only, until the enrollment expires
+     *     (15 minutes). A pending enrollment of the same node is replaced.
+     *
+     *     The caller is the joining node, authenticated by its credentials; its
+     *     cluster in the collector must be the one of the path, and it must not be
+     *     the seed of the cluster.
+     */
+    post: operations["PostClusterEnrollment"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/clusters/{cluster_id}/enrollments/{enrollment_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description An enrollment, the joining node polling it to wait for its join.
+     *     A user who sees the cluster, or a node of it.
+     */
+    get: operations["GetClusterEnrollment"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/clusters/{cluster_id}/enrollments/{enrollment_id}/result": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description The member that claimed an enrollment reports how it ended: done when
+     *     the joining node accepted the join order (om3 POST /api/cluster/enroll),
+     *     which it then carries out; failed with the error otherwise. The join is
+     *     complete when the node reports the cluster as its own.
+     */
+    post: operations["PostClusterEnrollmentResult"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/clusters/{cluster_id}/enrollments/claim": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description A member of the cluster claims the oldest pending enrollment of another
+     *     node, with its join token, to enroll it. 204 when none is pending.
+     *     The caller is a node, its cluster in the collector the one of the path.
+     */
+    post: operations["PostClusterEnrollmentClaim"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/nodes/{node_id}/bootstrap_token": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Issue the bootstrap token of a declared node: the node must name a
+     *     cluster with a declaration. The token is shown once, kept hashed; it
+     *     revokes the unused token issued before. Manager or NodeManager.
+     */
+    post: operations["PostNodeBootstrapToken"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -13874,6 +14103,142 @@ export interface components {
       status?: string;
       steps?: number;
     };
+    ClusterDeclaration: {
+      app: string;
+      cluster_id: string;
+      cluster_name: string;
+      /** Format: date-time */
+      created: string;
+      created_by: string;
+      heartbeats: components["schemas"]["ClusterHeartbeat"][];
+      seed_node_id?: string | null;
+      seed_nodename?: string | null;
+      /** Format: date-time */
+      updated: string;
+    };
+    ClusterDeclarationInput: {
+      /** @description The app of the nodes of the cluster. */
+      app?: string;
+      /** @description The id of a cluster reporting already. Omitted, a new id. */
+      cluster_id?: string;
+      cluster_name: string;
+      heartbeats?: components["schemas"]["ClusterHeartbeat"][];
+    };
+    ClusterDeclarationList: {
+      data: components["schemas"]["ClusterDeclarationSummary"][];
+    };
+    ClusterDeclarationNode: {
+      app: string;
+      /** @description The cluster the node row names now. */
+      cluster_id: string;
+      /**
+       * Format: date-time
+       * @description The last report of the node, null when it never reported.
+       */
+      last_comm?: string | null;
+      node_id: string;
+      nodename: string;
+      seed: boolean;
+      /** Format: date-time */
+      token_created?: string | null;
+      /** Format: date-time */
+      token_expires?: string | null;
+      /** Format: date-time */
+      token_used?: string | null;
+    };
+    ClusterDeclarationNodeInput: {
+      app?: string;
+      nodename: string;
+    };
+    ClusterDeclarationNodeList: {
+      data: components["schemas"]["ClusterDeclarationNode"][];
+    };
+    ClusterDeclarationSummary: components["schemas"]["ClusterDeclaration"] & {
+      /** @description The nodes the collector has with the cluster_id. */
+      node_count: number;
+      pending_enrollments: number;
+      /** @description Those that reported to the collector. */
+      reporting_count: number;
+    };
+    ClusterDeclarationUpdate: {
+      app?: string;
+      heartbeats?: components["schemas"]["ClusterHeartbeat"][];
+    };
+    ClusterEnrollment: {
+      claimed_by?: string | null;
+      cluster_id: string;
+      /** Format: date-time */
+      created: string;
+      /** Format: date-time */
+      expires: string;
+      /** Format: int64 */
+      id: number;
+      message: string;
+      node_addr: string;
+      node_id: string;
+      nodename: string;
+      state: components["schemas"]["ClusterEnrollmentState"];
+      /** Format: date-time */
+      updated: string;
+    };
+    ClusterEnrollmentClaim: {
+      enrollment: components["schemas"]["ClusterEnrollment"];
+      join_token: string;
+    };
+    ClusterEnrollmentList: {
+      data: components["schemas"]["ClusterEnrollment"][];
+    };
+    ClusterEnrollmentRequest: {
+      join_token: string;
+      /** @description Where the members reach the api of the node. Its nodename by default. */
+      node_addr?: string;
+    };
+    ClusterEnrollmentResult: {
+      message?: string;
+      /** @enum {string} */
+      state: "done" | "failed";
+    };
+    /** @enum {string} */
+    ClusterEnrollmentState: "pending" | "claimed" | "done" | "failed" | "expired";
+    /**
+     * @description A hb#<n> section of the om3 cluster configuration, n its rank from 1:
+     *     its keywords and their values. type is required.
+     */
+    ClusterHeartbeat: {
+      type: string;
+    } & {
+      [key: string]: string;
+    };
+    NodeBootstrap: {
+      app: string;
+      cluster: components["schemas"]["NodeBootstrapCluster"];
+      node_id: string;
+      nodename: string;
+      /** @description The credential of the node on the collector (node.uuid). */
+      uuid: string;
+    };
+    NodeBootstrapCluster: {
+      heartbeats: components["schemas"]["ClusterHeartbeat"][];
+      id: string;
+      name: string;
+      /** @enum {string} */
+      role: "seed" | "join";
+      /** @description The node that created the cluster, when role is join. */
+      seed_nodename?: string;
+    };
+    NodeBootstrapRequest: {
+      nodename: string;
+      token: string;
+    };
+    NodeBootstrapToken: {
+      /** Format: date-time */
+      expires: string;
+      token: string;
+    };
+    NodeBootstrapTokenRequest: {
+      /** @description The lifetime of the token, 60 by default, 1440 at most. */
+      ttl_minutes?: number;
+    };
   };
   responses: {
     /** @description OK */
@@ -14074,6 +14439,9 @@ export interface components {
     inQueryStats: string;
     inQuerySync: boolean;
     ObjectPathHeader: string;
+    /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+    inPathClusterId: string;
+    inPathEnrollmentId: number;
   };
   requestBodies: never;
   headers: never;
@@ -41371,6 +41739,415 @@ export interface operations {
         };
       };
       401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostAuthNodeBootstrap: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["NodeBootstrapRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NodeBootstrap"];
+        };
+      };
+      400: components["responses"]["400"];
+      403: components["responses"]["403"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetClusterDeclarations: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterDeclarationList"];
+        };
+      };
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostClusters: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClusterDeclarationInput"];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterDeclaration"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetClusterDeclaration: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterDeclaration"];
+        };
+      };
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  PutClusterDeclaration: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClusterDeclarationUpdate"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterDeclaration"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  DeleteClusterDeclaration: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Deleted */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetClusterDeclarationNodes: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterDeclarationNodeList"];
+        };
+      };
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostClusterDeclarationNode: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClusterDeclarationNodeInput"];
+      };
+    };
+    responses: {
+      /** @description Created, or found in the cluster */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterDeclarationNode"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetClusterEnrollments: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterEnrollmentList"];
+        };
+      };
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostClusterEnrollment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClusterEnrollmentRequest"];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterEnrollment"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetClusterEnrollment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+        enrollment_id: components["parameters"]["inPathEnrollmentId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterEnrollment"];
+        };
+      };
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostClusterEnrollmentResult: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+        enrollment_id: components["parameters"]["inPathEnrollmentId"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClusterEnrollmentResult"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterEnrollment"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostClusterEnrollmentClaim: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: components["parameters"]["inPathClusterId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Claimed */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClusterEnrollmentClaim"];
+        };
+      };
+      /** @description No pending enrollment */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      500: components["responses"]["500"];
+    };
+  };
+  PostNodeBootstrapToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description ID of the node */
+        node_id: components["parameters"]["inPathNodeId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["NodeBootstrapTokenRequest"];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NodeBootstrapToken"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
       500: components["responses"]["500"];
     };
   };
