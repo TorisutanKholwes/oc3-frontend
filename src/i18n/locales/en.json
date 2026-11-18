@@ -82,7 +82,8 @@
     "aiResources": "Resources",
     "aiSkills": "Skills",
     "om3Grants": "om3 grants",
-    "sysreportAccess": "Sysreport access"
+    "sysreportAccess": "Sysreport access",
+    "scheduler": "Scheduler"
   },
   "shortcuts": {
     "title": "Keyboard shortcuts",
@@ -3818,6 +3819,41 @@
       "pickFilterset": "Pick a filterset",
       "deleteQuestion": "Delete the authorization of {{team}} on {{filterset}} for {{pattern}}?"
     }
+  },
+  "schedulerTasks": {
+    "title": "Scheduler tasks",
+    "intro": "The tasks the scheduler runs by the period: purges, alerts, statistics, notifications. Each shows its last run, its next one and its runs of the last 24 hours; the runs are kept 7 days. Unfold a task to see its subtasks, which run with it. A Manager disables or enables a task, which the scheduler follows within 5 seconds, interrupting a run in progress.",
+    "empty": "The scheduler declared no task: it declares them when it starts.",
+    "fields": {
+      "task": "Task",
+      "status": "Last run",
+      "lastRun": "Started",
+      "duration": "Duration",
+      "nextRun": "Next run",
+      "period": "Period",
+      "runs24h": "Runs (24 h)",
+      "duration24h": "Avg / max (24 h)",
+      "enabled": "Enabled"
+    },
+    "status": {
+      "ok": "ok",
+      "failed": "failed",
+      "none": "not run yet"
+    },
+    "enabled": "enabled",
+    "disabled": "disabled",
+    "enabledLabel": "Task {{task}}",
+    "notScheduled": "not scheduled",
+    "failures_one": "{{count}} failed",
+    "failures_other": "{{count}} failed",
+    "avgMax": "{{avg}} / {{max}}",
+    "subtaskCount_one": "{{count}} subtask",
+    "subtaskCount_other": "{{count}} subtasks",
+    "showSubtasks": "Show the subtasks of {{task}}",
+    "hideSubtasks": "Hide the subtasks of {{task}}",
+    "failuresTitle": "Last failures",
+    "failuresIntro": "The last 50 failed runs of the tasks and subtasks, the last first, with their error.",
+    "noFailure": "No failed run in the last 7 days."
   },
   "oidcAuthorize": {
     "title": "Sign in to the cluster {{cluster}}",

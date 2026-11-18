@@ -32,6 +32,7 @@ import { FiltersPage } from "@/features/filters/FiltersPage";
 import { ClaimMappingsPage } from "@/features/claim-mappings/ClaimMappingsPage";
 import { Om3GrantsPage } from "@/features/om3-grants/Om3GrantsPage";
 import { SysreportAccessPage } from "@/features/sysreport-access/SysreportAccessPage";
+import { SchedulerTasksPage } from "@/features/scheduler/SchedulerTasksPage";
 import { OidcAuthorizePage } from "@/features/om3-grants/OidcAuthorizePage";
 import { FormConnectorsPage } from "@/features/form-connectors/FormConnectorsPage";
 import { AIResourcesPage, AISkillsPage } from "@/features/ai-content/AIContentPage";
@@ -370,6 +371,13 @@ const sysreportAccessRoute = createRoute({
   component: SysreportAccessPage,
 });
 
+// The tasks of the scheduler, their runs and their failures.
+const schedulerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/scheduler",
+  component: SchedulerTasksPage,
+});
+
 // Where an om3 cluster sends its users to sign in with the collector: the request
 // its provider endpoint saved, for the user signed in to approve.
 const oidcAuthorizeRoute = createRoute({
@@ -595,6 +603,7 @@ const routeTree = rootRoute.addChildren([
   claimMappingsRoute,
   om3GrantsRoute,
   sysreportAccessRoute,
+  schedulerRoute,
   oidcAuthorizeRoute,
   formConnectorsRoute,
   aiResourcesRoute,

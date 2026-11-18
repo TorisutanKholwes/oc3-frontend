@@ -43,6 +43,7 @@ export type MenuId =
   | "adm-claim-mappings"
   | "adm-om3-grants"
   | "adm-sysreport"
+  | "adm-scheduler"
   | "adm-form-connectors"
   | "adm-ai-resources"
   | "adm-ai-skills"
@@ -98,6 +99,7 @@ export interface NavEntry {
     | "/claim-mappings"
     | "/om3-grants"
     | "/sysreport-access"
+    | "/scheduler"
     | "/form-connectors"
     | "/ai-resources"
     | "/ai-skills"
@@ -549,7 +551,16 @@ export const NAV_CATEGORIES: NavCategory[] = [
     key: "audit",
     labelKey: "nav.categories.audit",
     view: "admin",
-    entries: [{ to: "/logs", menuId: "adm-log", labelKey: "nav.logs", icon: "log" }],
+    entries: [
+      { to: "/logs", menuId: "adm-log", labelKey: "nav.logs", icon: "log" },
+      // The runs of the scheduler tasks: read by every user, a Manager disables a task.
+      {
+        to: "/scheduler",
+        menuId: "adm-scheduler",
+        labelKey: "nav.scheduler",
+        icon: "schedulerTask",
+      },
+    ],
   },
 ];
 

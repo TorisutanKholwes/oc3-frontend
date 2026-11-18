@@ -7750,6 +7750,77 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/scheduler/runs": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description List the runs of the scheduler tasks and subtasks of the last 7 days,
+     *     the last first: filter on task_name for the runs of a task, on status
+     *     (ok or failed) for the failures. Requires a user authentication.
+     */
+    get: operations["GetSchedulerRuns"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/scheduler/tasks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description List the tasks of the scheduler and their subtasks, as the scheduler
+     *     declared them at its last start: a subtask is named
+     *     "<task>: <subtask>" and has its task as parent. Each has its period
+     *     and timeout in seconds, whether it is disabled, its last run (status,
+     *     begin, duration, error), its next run for an enabled task, and the
+     *     count, failures and durations of its runs of the last 24 hours.
+     *     Requires a user authentication.
+     */
+    get: operations["GetSchedulerTasks"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/scheduler/tasks/{task_name}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description A task or a subtask of the scheduler. Requires a user authentication. */
+    get: operations["GetSchedulerTask"];
+    /**
+     * @description Disable or enable a task of the scheduler. The scheduler reads the
+     *     flag every 5 seconds: it stops a disabled task, interrupting a run in
+     *     progress, and starts an enabled one, which runs at the end of its
+     *     period from its last run. A subtask runs with its task and can not be
+     *     disabled alone. Requires the Manager privilege. The action is logged
+     *     in the collector's log.
+     */
+    put: operations["PutSchedulerTask"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/search": {
     parameters: {
       query?: never;
@@ -12917,6 +12988,75 @@ export interface components {
        */
       total_size: number;
     };
+    SchedulerRunListResponse: {
+      data:
+        | components["schemas"]["SchedulerRunRow"][]
+        | {
+            [key: string]: {
+              [key: string]: number;
+            };
+          };
+      meta?: components["schemas"]["ListMeta"];
+    };
+    /**
+     * @description A run of a scheduler task or subtask. Every property is optional: the
+     *     `props` query parameter selects which columns the server returns.
+     */
+    SchedulerRunRow: {
+      begin_at?: string;
+      duration_ms?: number;
+      error?: string;
+      id?: number;
+      /** @description ok or failed. */
+      status?: string;
+      task_name?: string;
+    };
+    SchedulerTaskInput: {
+      is_disabled: boolean;
+    };
+    SchedulerTaskListResponse: {
+      data:
+        | components["schemas"]["SchedulerTaskRow"][]
+        | {
+            [key: string]: {
+              [key: string]: number;
+            };
+          };
+      meta?: components["schemas"]["ListMeta"];
+    };
+    /**
+     * @description A task or a subtask of the scheduler. Every property is optional: the
+     *     `props` query parameter selects which columns the server returns. The
+     *     dates are those of the database, as text, empty when unset.
+     */
+    SchedulerTaskRow: {
+      avg_duration_ms_24h?: number | null;
+      /** @description Whether the scheduler declared it at its last start; false for a task the code does not hold any more. */
+      declared?: boolean;
+      failures_24h?: number;
+      id?: number;
+      is_disabled?: boolean;
+      last_begin_at?: string;
+      last_duration_ms?: number | null;
+      last_error?: string;
+      /** @description When the scheduler last started the task, which the next run follows by its period. Empty for a subtask. */
+      last_run_at?: string;
+      /** @description ok or failed; empty before the first recorded run. */
+      last_status?: string;
+      max_duration_ms_24h?: number | null;
+      /** @description When the scheduler runs an enabled task next. Empty for a subtask or a disabled task. */
+      next_run_at?: string;
+      /** @description The task running this subtask, empty for a task. */
+      parent?: string;
+      /** @description Seconds between two runs, the period of its task for a subtask; 0 when not scheduled. */
+      period_s?: number;
+      runs_24h?: number;
+      task_desc?: string;
+      /** @description The name of the task, "<task>: <subtask>" for a subtask. */
+      task_name?: string;
+      /** @description Seconds a run may last. */
+      timeout_s?: number;
+    };
     /** @description The objects of one kind matching a search. */
     SearchGroup: {
       /** @description Set when the kind could not be searched. */
@@ -13875,6 +14015,8 @@ export interface components {
     inPathOrchestrationRunId: number;
     /** @description ID of the ruleset */
     inPathRsetId: string;
+    /** @description The name of a scheduler task, "<task>: <subtask>" for a subtask, url-encoded. */
+    inPathSchedulerTaskName: string;
     /** @description The object of the node, as namespace/kind/name. Default the node. */
     inQueryAgentPath: string;
     /** @description only the objects for this backend, as the MCP servers ask; all of them when absent */
@@ -14009,6 +14151,186 @@ export interface operations {
           "application/json": components["schemas"]["ListResponse"];
         };
       };
+      500: components["responses"]["500"];
+    };
+  };
+  GetSchedulerRuns: {
+    parameters: {
+      query?: {
+        /**
+         * @description Column filter, repeatable; several filters combine with AND. Each value is
+         *     `prop:expr`, `prop` being a property of the list (joined ones included, as
+         *     for orderby) and `expr` one of:
+         *       - text: case-insensitive match anywhere in the value;
+         *       - `~regex`: regular expression (RE2 syntax), case-insensitive;
+         *       - `in:a,b,c`: one of the listed values;
+         *       - `eq:v`, `ne:v`: equal, not equal;
+         *       - `gt:v`, `gte:v`, `lt:v`, `lte:v`: comparisons, for numbers and dates;
+         *         a date may be relative to now, `-` then a duration in weeks, days,
+         *         hours, minutes and seconds: `lt:-15m` keeps the dates older than 15
+         *         minutes, `gte:-1d12h` those of the last day and a half;
+         *       - `empty`: no value;
+         *       - `!expr`: the inverse of any of the above, that is the rows `expr` leaves
+         *         out, those without a value included: `!dev`, `!~^dev`, `!in:a,b`,
+         *         `!empty` (any value).
+         *     An unknown property, a property without a column, or an invalid regular
+         *     expression is answered with 400.
+         */
+        filter?: components["parameters"]["inQueryFilter"];
+        /** @description Comma-separated list of properties to group the result by (e.g. groupby=app,svcname). */
+        groupby?: components["parameters"]["inQueryGroupby"];
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /**
+         * @description Include metadata in the response. Enabled by default. Use false or 0 to omit
+         *     the meta field. The metadata of a list carries its total number of rows
+         *     without pagination (total), as well as the rows returned (count), the offset
+         *     and the limit.
+         */
+        meta?: components["parameters"]["inQueryMeta"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+        /** @description Comma-separated list of properties to sort by. Prefix a property with - for descending order (e.g. orderby=nodename,-app). */
+        orderby?: components["parameters"]["inQueryOrderby"];
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+        /**
+         * @description With "1" or "true", the response counts the distinct values of each
+         *     selected property instead of listing the rows: `data` maps each property
+         *     to an object of value → number of rows ("empty" for a null or blank
+         *     value), over the whole selection (access control, filters and session
+         *     filterset applied, `offset` ignored). `limit`, when given, caps the
+         *     number of values returned per property, the most frequent first; without
+         *     it every value is returned. `meta.total` is the number of rows,
+         *     `meta.distinct` the number of distinct values of each property, and
+         *     `meta.other` the number of rows whose value was left out by the limit.
+         *     A count taking longer than 5 seconds is refused with a 400, asking to
+         *     narrow the selection.
+         */
+        stats?: components["parameters"]["inQueryStats"];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SchedulerRunListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetSchedulerTask: {
+    parameters: {
+      query?: {
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+      };
+      header?: never;
+      path: {
+        /** @description The name of a scheduler task, "<task>: <subtask>" for a subtask, url-encoded. */
+        task_name: components["parameters"]["inPathSchedulerTaskName"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SchedulerTaskListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  GetSchedulerTasks: {
+    parameters: {
+      query?: {
+        /**
+         * @description Column filter, repeatable; several filters combine with AND. Each value is
+         *     `prop:expr`, `prop` being a property of the list (joined ones included, as
+         *     for orderby) and `expr` one of:
+         *       - text: case-insensitive match anywhere in the value;
+         *       - `~regex`: regular expression (RE2 syntax), case-insensitive;
+         *       - `in:a,b,c`: one of the listed values;
+         *       - `eq:v`, `ne:v`: equal, not equal;
+         *       - `gt:v`, `gte:v`, `lt:v`, `lte:v`: comparisons, for numbers and dates;
+         *         a date may be relative to now, `-` then a duration in weeks, days,
+         *         hours, minutes and seconds: `lt:-15m` keeps the dates older than 15
+         *         minutes, `gte:-1d12h` those of the last day and a half;
+         *       - `empty`: no value;
+         *       - `!expr`: the inverse of any of the above, that is the rows `expr` leaves
+         *         out, those without a value included: `!dev`, `!~^dev`, `!in:a,b`,
+         *         `!empty` (any value).
+         *     An unknown property, a property without a column, or an invalid regular
+         *     expression is answered with 400.
+         */
+        filter?: components["parameters"]["inQueryFilter"];
+        /** @description Comma-separated list of properties to group the result by (e.g. groupby=app,svcname). */
+        groupby?: components["parameters"]["inQueryGroupby"];
+        /** @description The maximum number of entries to return. 0 means no limit. */
+        limit?: components["parameters"]["inQueryLimit"];
+        /**
+         * @description Include metadata in the response. Enabled by default. Use false or 0 to omit
+         *     the meta field. The metadata of a list carries its total number of rows
+         *     without pagination (total), as well as the rows returned (count), the offset
+         *     and the limit.
+         */
+        meta?: components["parameters"]["inQueryMeta"];
+        /** @description Skip the first entries of the data cursor. */
+        offset?: components["parameters"]["inQueryOffset"];
+        /** @description Comma-separated list of properties to sort by. Prefix a property with - for descending order (e.g. orderby=nodename,-app). */
+        orderby?: components["parameters"]["inQueryOrderby"];
+        /** @description A list of properties to include in each data dictionnary. */
+        props?: components["parameters"]["inQueryProps"];
+        /**
+         * @description With "1" or "true", the response counts the distinct values of each
+         *     selected property instead of listing the rows: `data` maps each property
+         *     to an object of value → number of rows ("empty" for a null or blank
+         *     value), over the whole selection (access control, filters and session
+         *     filterset applied, `offset` ignored). `limit`, when given, caps the
+         *     number of values returned per property, the most frequent first; without
+         *     it every value is returned. `meta.total` is the number of rows,
+         *     `meta.distinct` the number of distinct values of each property, and
+         *     `meta.other` the number of rows whose value was left out by the limit.
+         *     A count taking longer than 5 seconds is refused with a 400, asking to
+         *     narrow the selection.
+         */
+        stats?: components["parameters"]["inQueryStats"];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SchedulerTaskListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
       500: components["responses"]["500"];
     };
   };
@@ -38358,6 +38680,38 @@ export interface operations {
       };
       400: components["responses"]["400"];
       401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  PutSchedulerTask: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The name of a scheduler task, "<task>: <subtask>" for a subtask, url-encoded. */
+        task_name: components["parameters"]["inPathSchedulerTaskName"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SchedulerTaskInput"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SchedulerTaskListResponse"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
       404: components["responses"]["404"];
       500: components["responses"]["500"];
     };

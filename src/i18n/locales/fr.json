@@ -82,7 +82,8 @@
     "aiResources": "Ressources",
     "aiSkills": "Skills",
     "om3Grants": "Droits om3",
-    "sysreportAccess": "Accès aux sysreports"
+    "sysreportAccess": "Accès aux sysreports",
+    "scheduler": "Scheduler"
   },
   "shortcuts": {
     "title": "Raccourcis clavier",
@@ -3818,6 +3819,41 @@
       "pickFilterset": "Choisir un filterset",
       "deleteQuestion": "Supprimer l'autorisation de {{team}} sur {{filterset}} pour {{pattern}} ?"
     }
+  },
+  "schedulerTasks": {
+    "title": "Tâches du scheduler",
+    "intro": "Les tâches que le scheduler exécute périodiquement : purges, alertes, statistiques, notifications. Chacune montre sa dernière exécution, la prochaine et ses exécutions des dernières 24 heures ; les exécutions sont conservées 7 jours. Dépliez une tâche pour voir ses sous-tâches, qui s'exécutent avec elle. Un Manager désactive ou réactive une tâche, ce que le scheduler suit en 5 secondes, en interrompant une exécution en cours.",
+    "empty": "Le scheduler n'a déclaré aucune tâche : il les déclare à son démarrage.",
+    "fields": {
+      "task": "Tâche",
+      "status": "Dernière exécution",
+      "lastRun": "Démarrée",
+      "duration": "Durée",
+      "nextRun": "Prochaine",
+      "period": "Période",
+      "runs24h": "Exécutions (24 h)",
+      "duration24h": "Moy. / max (24 h)",
+      "enabled": "Active"
+    },
+    "status": {
+      "ok": "ok",
+      "failed": "en échec",
+      "none": "pas encore exécutée"
+    },
+    "enabled": "active",
+    "disabled": "désactivée",
+    "enabledLabel": "Tâche {{task}}",
+    "notScheduled": "non planifiée",
+    "failures_one": "{{count}} en échec",
+    "failures_other": "{{count}} en échec",
+    "avgMax": "{{avg}} / {{max}}",
+    "subtaskCount_one": "{{count}} sous-tâche",
+    "subtaskCount_other": "{{count}} sous-tâches",
+    "showSubtasks": "Afficher les sous-tâches de {{task}}",
+    "hideSubtasks": "Masquer les sous-tâches de {{task}}",
+    "failuresTitle": "Derniers échecs",
+    "failuresIntro": "Les 50 dernières exécutions en échec des tâches et sous-tâches, de la plus récente à la plus ancienne, avec leur erreur.",
+    "noFailure": "Aucune exécution en échec ces 7 derniers jours."
   },
   "oidcAuthorize": {
     "title": "Connexion au cluster {{cluster}}",

@@ -1,5 +1,6 @@
 import {
   BellIcon,
+  ClockIcon,
   BookIcon,
   AlertTriangleIcon,
   DashboardIcon,
@@ -85,6 +86,7 @@ export type ObjectKind =
   | "claimMapping"
   | "om3Grant"
   | "sysreportAccess"
+  | "schedulerTask"
   | "fieldConstraint"
   | "compAttachment"
   | "formConnector"
@@ -184,6 +186,8 @@ const KINDS: Record<ObjectKind, { Icon: typeof ServerIcon; className: string }> 
   om3Grant: { Icon: ShieldCheckIcon, className: "text-icon-node" },
   // A locked file in the tint of the nodes: who reads their sensitive sysreport files.
   sysreportAccess: { Icon: FileLockIcon, className: "text-icon-node" },
+  // The tasks of the scheduler, run by the period.
+  schedulerTask: { Icon: ClockIcon, className: "text-icon-dashboard" },
   // The values allowed for node attributes: the tint of the nodes they constrain.
   fieldConstraint: { Icon: ListChecksIcon, className: "text-icon-node" },
   // A link in the tint of compliance: modulesets and rulesets tied to their targets.
