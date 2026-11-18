@@ -175,8 +175,25 @@ function HeartbeatsEditor({
 }
 
 /**
+ * Tells the panel whether a form holds an entry not saved yet, and that it does
+ * not any more once the form is gone.
+ */
+function useReportDirty(dirty: boolean, onDirtyChange: (dirty: boolean) => void) {
+  useEffect(() => {
+    onDirtyChange(dirty);
+  }, [dirty, onDirtyChange]);
+  useEffect(
+    () => () => {
+      onDirtyChange(false);
+    },
+    [onDirtyChange],
+  );
+}
+
+/**
  * Declaring a cluster, or the provisioning of a declared one: its configuration,
- * its nodes and their bootstrap tokens, its enrollments.
+ * its nodes and their bootstrap tokens, its enrollments. A click beside the panel
+ * closes it, as the other panels, unless a form holds an entry not saved yet.
  */
 export function DeclarationPanel({
   open,
@@ -190,6 +207,7 @@ export function DeclarationPanel({
   onCreated: (clusterId: string) => void;
 }) {
   const { t } = useTranslation();
+  const [dirty, setDirty] = useState(false);
   return (
     <SlideOver
       open={open}
@@ -203,30 +221,46 @@ export function DeclarationPanel({
       closeLabel={t("detail.close")}
       resizeLabel={t("detail.resize")}
       size="wide"
-      closeOnOutsideClick={declaration !== undefined}
+      closeOnOutsideClick={!dirty}
     >
       {declaration === undefined ? (
-        <CreateForm onCreated={onCreated} />
+        <CreateForm onCreated={onCreated} onDirtyChange={setDirty} />
       ) : (
         <DeclarationDetail
           key={declaration.cluster_id}
           declaration={declaration}
           onDeleted={onClose}
+          onDirtyChange={setDirty}
         />
       )}
     </SlideOver>
   );
 }
 
-function CreateForm({ onCreated }: { onCreated: (clusterId: string) => void }) {
+const NEW_HEARTBEATS: HeartbeatDraft[] = [{ type: "unicast", keywords: "" }];
+
+function CreateForm({
+  onCreated,
+  onDirtyChange,
+}: {
+  onCreated: (clusterId: string) => void;
+  onDirtyChange: (dirty: boolean) => void;
+}) {
   const { t } = useTranslation();
   const id = useId();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [clusterId, setClusterId] = useState("");
   const [app, setApp] = useState("");
-  const [drafts, setDrafts] = useState<HeartbeatDraft[]>([{ type: "unicast", keywords: "" }]);
+  const [drafts, setDrafts] = useState<HeartbeatDraft[]>(NEW_HEARTBEATS);
   const [invalid, setInvalid] = useState("");
+  useReportDirty(
+    name.trim() !== "" ||
+      clusterId.trim() !== "" ||
+      app.trim() !== "" ||
+      JSON.stringify(drafts) !== JSON.stringify(NEW_HEARTBEATS),
+    onDirtyChange,
+  );
   const create = useMutation({
     mutationFn: (heartbeats: ClusterHeartbeat[]) =>
       declareCluster({
@@ -316,9 +350,11 @@ function CreateForm({ onCreated }: { onCreated: (clusterId: string) => void }) {
 function DeclarationDetail({
   declaration,
   onDeleted,
+  onDirtyChange,
 }: {
   declaration: ClusterDeclarationSummary;
   onDeleted: () => void;
+  onDirtyChange: (dirty: boolean) => void;
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -348,7 +384,7 @@ function DeclarationDetail({
           )}
         </dd>
       </dl>
-      <ConfigurationForm declaration={declaration} />
+      <ConfigurationForm declaration={declaration} onDirtyChange={onDirtyChange} />
       <NodesSection declaration={declaration} />
       <EnrollmentsSection clusterId={declaration.cluster_id} />
       {remove.isError && (
@@ -374,7 +410,13 @@ function DeclarationDetail({
 }
 
 /** The app and the heartbeats a declared cluster provisions its nodes with. */
-function ConfigurationForm({ declaration }: { declaration: ClusterDeclarationSummary }) {
+function ConfigurationForm({
+  declaration,
+  onDirtyChange,
+}: {
+  declaration: ClusterDeclarationSummary;
+  onDirtyChange: (dirty: boolean) => void;
+}) {
   const { t } = useTranslation();
   const id = useId();
   const queryClient = useQueryClient();
@@ -383,6 +425,7 @@ function ConfigurationForm({ declaration }: { declaration: ClusterDeclarationSum
   const [invalid, setInvalid] = useState("");
   const saved = JSON.stringify({ app: declaration.app, hb: draftsOf(declaration.heartbeats) });
   const dirty = JSON.stringify({ app, hb: drafts }) !== saved;
+  useReportDirty(dirty, onDirtyChange);
   const save = useMutation({
     mutationFn: (heartbeats: ClusterHeartbeat[]) =>
       updateDeclaration(declaration.cluster_id, { app: app.trim(), heartbeats }),
