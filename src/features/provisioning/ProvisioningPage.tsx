@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { ObjectIcon } from "@/components/opensvc/ObjectIcon";
+import { useHasPrivilege } from "@/lib/api/effective-privileges";
 import { DateTime } from "@/components/ui/DateTime";
 import { DeclarationPanel } from "./DeclarationPanel";
 import { useClusterDeclarations } from "./provisioning-api";
@@ -19,6 +20,9 @@ export function ProvisioningPage() {
   const navigate = useNavigate({ from: "/provisioning" });
   const declarations = useClusterDeclarations();
   const [creating, setCreating] = useState(false);
+  // Declaring requires NodeManager, as the API checks: it also lists only the
+  // declarations of the clusters the user is responsible for.
+  const canDeclare = useHasPrivilege(["NodeManager"]);
   const selected = declarations.data?.find((d) => d.cluster_id === search.sel);
 
   function select(sel: string | undefined) {
@@ -32,16 +36,18 @@ export function ProvisioningPage() {
           <ObjectIcon kind="provisioning" className="h-5 w-5" />
           {t("provisioning.title")}
         </h1>
-        <button
-          type="button"
-          onClick={() => {
-            select(undefined);
-            setCreating(true);
-          }}
-          className="h-7 rounded-(--radius-control) bg-accent px-3 font-medium text-accent-ink"
-        >
-          {t("provisioning.new")}
-        </button>
+        {canDeclare ? (
+          <button
+            type="button"
+            onClick={() => {
+              select(undefined);
+              setCreating(true);
+            }}
+            className="h-7 rounded-(--radius-control) bg-accent px-3 font-medium text-accent-ink"
+          >
+            {t("provisioning.new")}
+          </button>
+        ) : null}
       </div>
       <p className="mb-3 max-w-3xl text-ink-muted">{t("provisioning.intro")}</p>
 
