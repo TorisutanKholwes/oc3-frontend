@@ -4159,6 +4159,19 @@
       "queued_one": "{{action}} queued on 1 cluster.",
       "queued_other": "{{action}} queued on {{count}} clusters.",
       "failure": "{{name}}: {{message}}",
+      "data": {
+        "delete": {
+          "label": "Delete from the collector",
+          "question_one": "Delete this cluster from the collector? Its nodes and its services go with it, with their instances, resources, alerts, checks, packages and tags, as do its declaration and the registrations of its nodes: the agents of a cluster still running must register again to report. The history of its orchestration runs stays. This cannot be undone.",
+          "question_other": "Delete these {{count}} clusters from the collector? Their nodes and their services go with them, with their instances, resources, alerts, checks, packages and tags, as do their declarations and the registrations of their nodes: the agents of a cluster still running must register again to report. The history of their orchestration runs stays. This cannot be undone.",
+          "confirm_one": "Delete the cluster",
+          "confirm_other": "Delete {{count}} clusters",
+          "running": "Deleting…",
+          "done_one": "1 cluster deleted.",
+          "done_other": "{{count}} clusters deleted.",
+          "description": "Remove the cluster, its nodes, its services and all their records from the collector."
+        }
+      },
       "items": {
         "freeze": "Freeze every node",
         "thaw": "Unfreeze every node",

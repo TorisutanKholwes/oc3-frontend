@@ -2027,7 +2027,17 @@ export interface paths {
     get: operations["GetCluster"];
     put?: never;
     post?: never;
-    delete?: never;
+    /**
+     * @description Delete a cluster from the collector: its nodes and its services, with
+     *     everything that refers to them (instances, resources, alerts, checks,
+     *     packages, tags, registrations…), its heartbeats, its declaration with
+     *     its bootstrap tokens and enrollments, and the om3 grants given on it.
+     *     The history of its orchestration runs stays. The agents of a cluster
+     *     still running must register again to report. NodeManager privilege,
+     *     and responsibility for every node and service of the cluster (a
+     *     Manager is responsible for them all).
+     */
+    delete: operations["DeleteCluster"];
     options?: never;
     head?: never;
     patch?: never;
@@ -31265,6 +31275,31 @@ export interface operations {
         };
       };
       400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      403: components["responses"]["403"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  DeleteCluster: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Cluster identifier (clusters.cluster_id, a uuid) */
+        cluster_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Deleted */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
       401: components["responses"]["401"];
       403: components["responses"]["403"];
       404: components["responses"]["404"];

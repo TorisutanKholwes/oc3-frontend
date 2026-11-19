@@ -4159,6 +4159,19 @@
       "queued_one": "{{action}} en file sur 1 cluster.",
       "queued_other": "{{action}} en file sur {{count}} clusters.",
       "failure": "{{name}} : {{message}}",
+      "data": {
+        "delete": {
+          "label": "Supprimer du collector",
+          "question_one": "Supprimer ce cluster du collector ? Ses nœuds et ses services partent avec lui, avec leurs instances, ressources, alertes, checks, paquets et tags, ainsi que sa déclaration et l'enregistrement de ses nœuds : les agents d'un cluster encore en service devront s'enregistrer à nouveau pour remonter leurs données. L'historique de ses orchestrations est conservé. Cette action est irréversible.",
+          "question_other": "Supprimer ces {{count}} clusters du collector ? Leurs nœuds et leurs services partent avec eux, avec leurs instances, ressources, alertes, checks, paquets et tags, ainsi que leurs déclarations et l'enregistrement de leurs nœuds : les agents d'un cluster encore en service devront s'enregistrer à nouveau pour remonter leurs données. L'historique de leurs orchestrations est conservé. Cette action est irréversible.",
+          "confirm_one": "Supprimer le cluster",
+          "confirm_other": "Supprimer {{count}} clusters",
+          "running": "Suppression…",
+          "done_one": "1 cluster supprimé.",
+          "done_other": "{{count}} clusters supprimés.",
+          "description": "Retirer le cluster, ses nœuds, ses services et tous leurs enregistrements du collector."
+        }
+      },
       "items": {
         "freeze": "Geler tous les nœuds",
         "thaw": "Dégeler tous les nœuds",
