@@ -199,7 +199,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
         to: "/provisioning",
         menuId: "adm-provisioning",
         labelKey: "nav.provisioning",
-        icon: "cluster",
+        icon: "provisioning",
         privileges: ["NodeManager"],
       },
       { to: "/services", menuId: "view-services", labelKey: "nav.services", icon: "service" },

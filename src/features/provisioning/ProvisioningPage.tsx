@@ -29,7 +29,7 @@ export function ProvisioningPage() {
     <section>
       <div className="mb-3 flex items-center gap-3">
         <h1 className="flex items-center gap-2 text-title font-semibold">
-          <ObjectIcon kind="cluster" className="h-5 w-5" />
+          <ObjectIcon kind="provisioning" className="h-5 w-5" />
           {t("provisioning.title")}
         </h1>
         <button

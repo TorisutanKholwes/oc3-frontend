@@ -201,7 +201,7 @@ export function DeclarationPanel({
           ? t("provisioning.createTitle")
           : t("provisioning.editTitle", { name: declaration.cluster_name })
       }
-      leading={<ObjectIcon kind="cluster" className="h-5 w-5" />}
+      leading={<ObjectIcon kind="provisioning" className="h-5 w-5" />}
       onClose={onClose}
       closeLabel={t("detail.close")}
       resizeLabel={t("detail.resize")}
