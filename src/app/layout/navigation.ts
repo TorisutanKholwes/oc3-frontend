@@ -564,12 +564,14 @@ export const NAV_CATEGORIES: NavCategory[] = [
     view: "admin",
     entries: [
       { to: "/logs", menuId: "adm-log", labelKey: "nav.logs", icon: "log" },
-      // The runs of the scheduler tasks: read by every user, a Manager disables a task.
+      // The scheduler tasks and their runs, errors included: a Manager reads and
+      // disables them, as the API requires.
       {
         to: "/scheduler",
         menuId: "adm-scheduler",
         labelKey: "nav.scheduler",
         icon: "schedulerTask",
+        privileges: ["Manager"],
       },
     ],
   },
